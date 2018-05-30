@@ -9,7 +9,7 @@ See the related [Issue that triggered the creation of this project](https://gith
 # This project can be added to your project via composer
 
 ```
-$ composer require forikal-uk/xml-authoring-library --require
+$ composer require forikal-uk/xml-authoring-library --prefer-source
 ```
 
 If you would like to develop both the library and, say a command that uses it in tandem. I beleive that composer allows you to grab the library as *source*
