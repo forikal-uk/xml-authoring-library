@@ -1,5 +1,5 @@
 {
-    "name": "forikal/xml-authoring-library",
+    "name": "forikal-uk/xml-authoring-library",
     "description": "Holding code that is reused by more than one component of the forikal xml authoring suite of projects.",
     "type": "library",
     "license": "Apache-2.0",
