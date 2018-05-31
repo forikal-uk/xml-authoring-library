@@ -12,7 +12,7 @@
         "google/apiclient": "^2.0"
     },
     "suggest": {
-        "google/apiclient": "To use the Google API helper"
+        "google/apiclient": "To use the Google API helper (version ^2.0 is required)"
     },
     "autoload": {
         "psr-4": {

@@ -23,6 +23,21 @@ use Symfony\Component\Filesystem\Filesystem;
 class GoogleAPIClient
 {
     /**
+     * Mime type for a Google Drive folder
+     */
+    const MIME_TYPE_DRIVE_FOLDER = 'application/vnd.google-apps.folder';
+
+    /**
+     * Mime type for a Google Sheets document
+     */
+    const MIME_TYPE_GOOGLE_SPREADSHEET = 'application/vnd.google-apps.spreadsheet';
+
+    /**
+     * Mime type for a Google Slides document
+     */
+    const MIME_TYPE_GOOGLE_PRESENTATION = 'application/vnd.google-apps.presentation';
+
+    /**
      * @var \Google_Client A Google API client from the SDK
      */
     protected $client;
