@@ -3,5 +3,25 @@
     "description": "Holding code that is reused by more than one component of the forikal xml authoring suite of projects.",
     "type": "library",
     "license": "Apache-2.0",
-    "require": {}
+    "require": {
+        "php": ">=5.5.9",
+        "psr/log": "^1.0",
+        "symfony/filesystem": "^3.4"
+    },
+    "require-dev": {
+        "google/apiclient": "^2.0"
+    },
+    "suggest": {
+        "google/apiclient": "To use the Google API helper"
+    },
+    "autoload": {
+        "psr-4": {
+            "Forikal\\Library\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Forikal\\Library\\Tests\\": "tests/"
+        }
+    }
 }
