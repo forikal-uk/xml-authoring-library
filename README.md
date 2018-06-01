@@ -75,3 +75,36 @@ $file = $googleAPIClient->driveService->files->get('87ad6fg90gr0m91c84');
 * The third argument is a list of required permissions.
 
 You can find more information in the source code. 
+
+### Console logger
+
+A [PSR-3](https://github.com/php-fig/log) logger which writes messages to a Symfony console output.
+In contrast to the [built-in Synfony Console logger](https://symfony.com/doc/3.4/components/console/logger.html), this doesn't print log level labels and is customizable (we can edit the source code).
+
+Usage example:
+
+```php
+use Forikal\Library\Console\ConsoleLogger;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
+use Psr\Log\LogLevel;
+
+// ...
+
+protected function execute(InputInterface $input, OutputInterface $output)
+{
+    $consoleLogger = new ConsoleLogger($output, [
+        LogLevel::DEBUG  => OutputInterface::VERBOSITY_VERY_VERBOSE,
+        LogLevel::INFO   => OutputInterface::VERBOSITY_VERBOSE,
+        LogLevel::NOTICE => OutputInterface::VERBOSITY_NORMAL
+    ], [
+        LogLevel::DEBUG  => '',
+        LogLevel::INFO   => '',
+        LogLevel::NOTICE => 'info'
+    ]);
+    
+    $service = new MyService($consoleLogger);
+}
+```
+
+The constructor arguments are the same as in the [Synfony Console logger](https://symfony.com/doc/3.4/components/console/logger.html).
