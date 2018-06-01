@@ -7,6 +7,8 @@ See the related [Issue that triggered the creation of this project](https://gith
 
 # Common Documentation
 
+A library of help pages. I.e Information that is relevant to more than one project in this suite of projects.
+
 - [How To: Google API Setup](https://github.com/forikal-uk/xml-authoring-library/blob/master/HowTo-GoogleAPISetup.md)
 
 # This project can be added to your project via composer
