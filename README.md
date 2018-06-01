@@ -67,6 +67,7 @@ $googleClient->authenticate(
     }
 );
 
+// $googleAPIClient->driveService is a \Google_Service_Drive instance. All the other services are available.
 $file = $googleAPIClient->driveService->files->get('87ad6fg90gr0m91c84');
 ```
 
@@ -78,7 +79,7 @@ You can find more information in the source code.
 
 ### Console logger
 
-A [PSR-3](https://github.com/php-fig/log) logger which writes messages to a Symfony console output.
+A [PSR-3](https://github.com/php-fig/log) compatible logger which writes messages to a Symfony console output.
 In contrast to the [built-in Synfony Console logger](https://symfony.com/doc/3.4/components/console/logger.html), this doesn't print log level labels and is customizable (we can edit the source code).
 
 Usage example:
