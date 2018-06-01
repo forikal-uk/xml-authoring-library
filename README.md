@@ -109,3 +109,11 @@ protected function execute(InputInterface $input, OutputInterface $output)
 ```
 
 The constructor arguments are the same as in the [Synfony Console logger](https://symfony.com/doc/3.4/components/console/logger.html).
+
+## Contribution
+
+1. Clone the repository.
+2. Install the dependencies by running `composer install` in a console.
+3. Make a change. Make sure the code follows the [PSR-2 standard](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md).
+4. Test the code by running `composer test`. If the test fails, fix the code.
+5. Commit and push the changes.

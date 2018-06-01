@@ -9,10 +9,13 @@
         "symfony/filesystem": "^3.4"
     },
     "require-dev": {
-        "google/apiclient": "^2.0"
+        "phpunit/phpunit": "^4.8",
+        "google/apiclient": "^2.0",
+        "symfony/console": "^3.4"
     },
     "suggest": {
-        "google/apiclient": "To use the Google API helper (version ^2.0 is required)"
+        "google/apiclient": "To use the Google API helper (version ^2.0 is required)",
+        "symfony/console": "To use the Symfony Console helpers (version ^3.4 is required)"
     },
     "autoload": {
         "psr-4": {
@@ -23,5 +26,8 @@
         "psr-4": {
             "Forikal\\Library\\Tests\\": "tests/"
         }
+    },
+    "scripts": {
+        "test": "phpunit"
     }
 }

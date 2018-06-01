@@ -5,7 +5,6 @@ namespace Forikal\Library\Console;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
 use Symfony\Component\Console\Formatter\OutputFormatter;
-use Symfony\Component\Console\Helper\FormatterHelper;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 
@@ -53,7 +52,7 @@ class ConsoleLogger extends AbstractLogger
 
     /**
      * @param OutputInterface $output The output where to print messages
-     * @param int[[ $verbosityLevelMap A map telling what verbosity level each log level corresponds
+     * @param int[] $verbosityLevelMap A map telling what verbosity level each log level corresponds
      * @param string[] $formatLevelMap A map telling what format should be applied to each log level. A format can be an
      *     empty string (it means no format).
      */
@@ -70,14 +69,14 @@ class ConsoleLogger extends AbstractLogger
     public function log($level, $message, array $context = [])
     {
         if (!isset($this->verbosityLevelMap[$level])) {
-            throw new InvalidArgumentException(sprintf('The log level "%s" does not exist.', $level));
+            throw new \InvalidArgumentException(sprintf('The log level "%s" does not exist.', $level));
         }
 
         $output = $this->output;
 
         // Write to the error output if necessary and available
         if (in_array($this->formatLevelMap[$level], [LogLevel::ERROR, LogLevel::CRITICAL, LogLevel::ALERT, LogLevel::EMERGENCY])) {
-            if ($this->output instanceof ConsoleOutputInterface) {
+            if ($output instanceof ConsoleOutputInterface) {
                 $output = $output->getErrorOutput();
             }
         }
