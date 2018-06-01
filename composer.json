@@ -4,15 +4,19 @@
     "type": "library",
     "license": "Apache-2.0",
     "require": {
-        "php": ">=5.5.9",
+        "php": ">=7.1",
         "psr/log": "^1.0",
+        "symfony/console": "^3.4",
+        "symfony/yaml": "^3.4",
         "symfony/filesystem": "^3.4"
     },
     "require-dev": {
+        "phpunit/phpunit": "^7.1",
         "google/apiclient": "^2.0"
     },
     "suggest": {
-        "google/apiclient": "To use the Google API helper (version ^2.0 is required)"
+        "google/apiclient": "To use the Google API helper (version ^2.0 is required)",
+        "forikal-uk/xmlauthor-example-command": "To see example how to use AbstractCommand"
     },
     "autoload": {
         "psr-4": {
