@@ -70,7 +70,7 @@ $googleClient->authenticate(
 $file = $googleAPIClient->driveService->files->get('87ad6fg90gr0m91c84');
 ```
 
-* `'google-client-secret.json'` is a path to a Google API client secret file. You can learn how to get it from [this instruction](HowTo-GoogleAPISetup).
+* `'google-client-secret.json'` is a path to a Google API client secret file. You can learn how to get it from [this instruction](HowTo-GoogleAPISetup.md).
 * `'google-access-token.json'` is a path to a file where to store a Google API access token so the helper won't prompt to authenticate next time. This file is optional and the value can be `null`.
 * The third argument is a list of required permissions.
 
