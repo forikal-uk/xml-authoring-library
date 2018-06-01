@@ -18,3 +18,5 @@ Content of the file should be similar to `client_secret.json.dist`
 (if you only want to read the file) or Edit (if you need read/write) access to the client_email address you can 
 find in the JSON file.
 
+
+Dev Notes: I followed the instructions above, wrote notes on how to improve the wording and grabbed screen grabs as I did it. So, I (@forikal-uk) shall migrate them over to here at some point. See my notes at: https://github.com/forikal-uk/gsheet-to-xml/issues/6#issuecomment-393713500 
