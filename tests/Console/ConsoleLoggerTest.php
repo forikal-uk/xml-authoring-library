@@ -18,7 +18,7 @@ class ConsoleLoggerTest extends TestCase
      */
     public function testMessageFormat($message, $context, $result)
     {
-        $output = $this->getMock(OutputInterface::class);
+        $output = $this->createMock(OutputInterface::class);
         $output
             ->expects($this->once())
             ->method('writeln')
@@ -48,10 +48,11 @@ class ConsoleLoggerTest extends TestCase
      */
     public function testInvalidLogLevel()
     {
-        $output = $this->getMock(OutputInterface::class);
+        $output = $this->createMock(OutputInterface::class);
         $logger = new ConsoleLogger($output);
 
-        $this->setExpectedException('InvalidArgumentException', 'The log level "foo" does not exist.');
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('The log level "foo" does not exist.');
         $logger->log('foo', 'bar');
     }
 
@@ -62,7 +63,7 @@ class ConsoleLoggerTest extends TestCase
      */
     public function testVerbosityLevelMap($outputVerbosity, $verbosityMap, $level, $shouldBePrinted)
     {
-        $output = $this->getMock(OutputInterface::class);
+        $output = $this->createMock(OutputInterface::class);
         $output
             ->method('getVerbosity')
             ->willReturn($outputVerbosity);
@@ -90,7 +91,7 @@ class ConsoleLoggerTest extends TestCase
      */
     public function testFormatLevelMap($formatMap, $level, $message, $resultMessage, $resultOptions = null)
     {
-        $output = $this->getMock(OutputInterface::class);
+        $output = $this->createMock(OutputInterface::class);
         $output
             ->method('getVerbosity')
             ->willReturn(OutputInterface::VERBOSITY_DEBUG);
@@ -121,11 +122,11 @@ class ConsoleLoggerTest extends TestCase
      */
     public function testErrorOutput($level, $isError)
     {
-        $output = $this->getMock(ConsoleOutputInterface::class);
+        $output = $this->createMock(ConsoleOutputInterface::class);
         $output->method('getVerbosity')->willReturn(OutputInterface::VERBOSITY_DEBUG);
 
         if ($isError) {
-            $errorOutput = $this->getMock(OutputInterface::class);
+            $errorOutput = $this->createMock(OutputInterface::class);
             $errorOutput->method('getVerbosity')->willReturn(OutputInterface::VERBOSITY_DEBUG);
             $errorOutput->expects($this->once())->method('writeln');
 

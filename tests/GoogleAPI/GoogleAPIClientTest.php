@@ -34,7 +34,7 @@ class GoogleAPIClientTest extends TestCase
         $this->googleClientMock->method('setApplicationName')->with('Forikal Tools');
         $this->googleClientMock->method('setAccessType')->with('offline');
 
-        $this->loggerMock = $this->getMock(LoggerInterface::class);
+        $this->loggerMock = $this->createMock(LoggerInterface::class);
 
         // Taken from https://phpunit.de/manual/4.8/en/test-doubles.html#test-doubles.mocking-the-filesystem
         vfsStreamWrapper::register();
@@ -46,7 +46,8 @@ class GoogleAPIClientTest extends TestCase
         $this->googleClientMock->method('setScopes')->with([]);
 
         $secretPath = vfsStream::url('google/secret.json');
-        $this->setExpectedException('RuntimeException', 'The `'.$secretPath.'` file doesn\'t exist');
+        $this->expectException('RuntimeException');
+        $this->expectExceptionMessage('The `'.$secretPath.'` file doesn\'t exist');
         $client = new GoogleAPIClient($this->googleClientMock);
         $client->authenticate($secretPath, null, [], function () {});
     }
@@ -137,7 +138,8 @@ class GoogleAPIClientTest extends TestCase
             [$this->equalTo('Sending the authentication code to Google')]
         );
 
-        $this->setExpectedException('RuntimeException', 'Google has declined the auth code: This is a test');
+        $this->expectException('RuntimeException');
+        $this->expectExceptionMessage('Google has declined the auth code: This is a test');
         $client = new GoogleAPIClient($this->googleClientMock, $this->loggerMock);
         $client->authenticate($secretPath, $tokenPath, [], function () { return 'foo1'; });
         $this->assertFileNotExists($tokenPath);
@@ -153,7 +155,7 @@ class GoogleAPIClientTest extends TestCase
         if ($shouldExist) {
             $this->assertInstanceOf($expectedClass, $client->$property);
         } else {
-            $this->setExpectedException('LogicException');
+            $this->expectException('LogicException');
             $client->$property;
         }
     }
