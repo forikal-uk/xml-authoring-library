@@ -22,10 +22,7 @@ class ConsoleLoggerTest extends TestCase
         $output
             ->expects($this->once())
             ->method('writeln')
-            ->with(
-                $this->equalTo($result),
-                $this->equalTo(OutputInterface::OUTPUT_PLAIN)
-            );
+            ->with($result, OutputInterface::OUTPUT_PLAIN);
         $output
             ->method('getVerbosity')
             ->willReturn(OutputInterface::VERBOSITY_DEBUG);

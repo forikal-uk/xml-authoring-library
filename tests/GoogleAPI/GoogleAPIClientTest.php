@@ -65,10 +65,10 @@ class GoogleAPIClientTest extends TestCase
         $this->googleClientMock->method('isAccessTokenExpired')->willReturn(false);
 
         $this->loggerMock->method('info')->withConsecutive(
-            [$this->equalTo('Getting the Google API client secret from the `'.$secretPath.'` file')],
-            [$this->equalTo('Sending the authentication code to Google')],
-            [$this->equalTo('Saving the access token to the `'.$tokenPath.'` file, so subsequent executions will not prompt for authorization')],
-            [$this->equalTo('The Google authentication is completed')]
+            ['Getting the Google API client secret from the `'.$secretPath.'` file'],
+            ['Sending the authentication code to Google'],
+            ['Saving the access token to the `'.$tokenPath.'` file, so subsequent executions will not prompt for authorization'],
+            ['The Google authentication is completed']
         );
         $this->loggerMock->method('notice')->with('Authenticated successfully');
 
@@ -100,11 +100,11 @@ class GoogleAPIClientTest extends TestCase
         $this->googleClientMock->method('fetchAccessTokenWithRefreshToken')->willReturn(['token' => '15$sDAF']);
 
         $this->loggerMock->method('info')->withConsecutive(
-            [$this->equalTo('Getting the Google API client secret from the `'.$secretPath.'` file')],
-            [$this->equalTo('Getting the last Google API access token from the `'.$tokenPath.'` file')],
-            [$this->equalTo('The access token is expired; refreshing the token')],
-            [$this->equalTo('Saving the refreshed access token to the `'.$tokenPath.'` file')],
-            [$this->equalTo('The Google authentication is completed')]
+            ['Getting the Google API client secret from the `'.$secretPath.'` file'],
+            ['Getting the last Google API access token from the `'.$tokenPath.'` file'],
+            ['The access token is expired; refreshing the token'],
+            ['Saving the refreshed access token to the `'.$tokenPath.'` file'],
+            ['The Google authentication is completed']
         );
 
         $client = new GoogleAPIClient($this->googleClientMock, $this->loggerMock);
@@ -131,9 +131,9 @@ class GoogleAPIClientTest extends TestCase
         $this->googleClientMock->method('isAccessTokenExpired')->willReturn(false);
 
         $this->loggerMock->method('info')->withConsecutive(
-            [$this->equalTo('Getting the Google API client secret from the `'.$secretPath.'` file')],
-            [$this->equalTo('Sending the authentication code to Google')],
-            [$this->equalTo('The Google authentication is completed')]
+            ['Getting the Google API client secret from the `'.$secretPath.'` file'],
+            ['Sending the authentication code to Google'],
+            ['The Google authentication is completed']
         );
         $this->loggerMock->method('notice')->with('Authenticated successfully');
 
@@ -156,10 +156,10 @@ class GoogleAPIClientTest extends TestCase
         $this->googleClientMock->method('isAccessTokenExpired')->willReturn(false);
 
         $this->loggerMock->method('info')->withConsecutive(
-            [$this->equalTo('Getting the Google API client secret from the `'.$secretPath.'` file')],
-            [$this->equalTo('Sending the authentication code to Google')],
-            [$this->equalTo('Saving the access token to the `'.$tokenPath.'` file, so subsequent executions will not prompt for authorization')],
-            [$this->equalTo('The Google authentication is completed')]
+            ['Getting the Google API client secret from the `'.$secretPath.'` file'],
+            ['Sending the authentication code to Google'],
+            ['Saving the access token to the `'.$tokenPath.'` file, so subsequent executions will not prompt for authorization'],
+            ['The Google authentication is completed']
         );
 
         $client = new GoogleAPIClient($this->googleClientMock, $this->loggerMock);
@@ -179,8 +179,8 @@ class GoogleAPIClientTest extends TestCase
         $this->googleClientMock->method('fetchAccessTokenWithAuthCode')->with('foo1')->willReturn(['error' => 'test', 'error_description' => 'This is a test']);
 
         $this->loggerMock->method('info')->withConsecutive(
-            [$this->equalTo('Getting the Google API client secret from the `'.$secretPath.'` file')],
-            [$this->equalTo('Sending the authentication code to Google')]
+            ['Getting the Google API client secret from the `'.$secretPath.'` file'],
+            ['Sending the authentication code to Google']
         );
 
         $this->expectException('RuntimeException');
