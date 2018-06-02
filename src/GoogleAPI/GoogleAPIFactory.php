@@ -19,7 +19,7 @@ class GoogleAPIFactory
      * @param LoggerInterface|null $logger A place where to write the client activity logs
      * @return GoogleAPIClient
      */
-    public function make(LoggerInterface $logger = null)
+    public function make(LoggerInterface $logger = null): GoogleAPIClient
     {
         return new GoogleAPIClient(null, $logger);
     }

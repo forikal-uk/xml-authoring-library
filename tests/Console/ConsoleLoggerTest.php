@@ -95,12 +95,10 @@ class ConsoleLoggerTest extends TestCase
         $output
             ->method('getVerbosity')
             ->willReturn(OutputInterface::VERBOSITY_DEBUG);
-        call_user_func_array([
-            $output
-                ->expects($this->once())
-                ->method('writeln'),
-                'with'
-        ], $resultOptions === null ? [$resultMessage] : [$resultMessage, $resultOptions]); // call_user_func_array can be replaced with argument unpacking since PHP 5.6
+        $output
+            ->expects($this->once())
+            ->method('writeln')
+            ->with($resultMessage, ...($resultOptions === null ? [] : [$resultOptions]));
 
         $logger = new ConsoleLogger($output, [], $formatMap);
         $logger->$level($message);

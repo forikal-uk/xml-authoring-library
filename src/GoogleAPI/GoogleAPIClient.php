@@ -64,7 +64,7 @@ class GoogleAPIClient
         }
 
         $this->client = $client;
-        $this->logger = $logger !== null ? $logger : new NullLogger();
+        $this->logger = $logger ?? new NullLogger();
         $this->filesystem = new Filesystem();
     }
 
@@ -81,11 +81,11 @@ class GoogleAPIClient
      * @throws \Exception If something wrong
      */
     public function authenticate(
-        $clientSecretFile,
-        $accessTokenFile,
-        $scopes,
+        string $clientSecretFile,
+        ?string $accessTokenFile,
+        array $scopes,
         callable $getAuthCode,
-        $forceAuthenticate = false
+        bool $forceAuthenticate = false
     ) {
         $this->client->setApplicationName('Forikal Tools');
         $this->client->setScopes($scopes);
@@ -144,7 +144,7 @@ class GoogleAPIClient
      *
      * Gets Google services for the magic properties
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         if (substr($name, -7) === 'Service') {
             $service = ucfirst(substr($name, 0, -7));
@@ -166,7 +166,7 @@ class GoogleAPIClient
      * @return mixed The data
      * @throws \RuntimeException If something wrong
      */
-    protected function loadCredentialJSON($file)
+    protected function loadCredentialJSON(string $file)
     {
         if (!file_exists($file)) {
             throw new \RuntimeException('The `'.$file.'` file doesn\'t exist');
@@ -195,7 +195,7 @@ class GoogleAPIClient
      * @param mixed $data The data
      * @throws \RuntimeException If something wrong
      */
-    protected function saveCredentialJson($file, $data)
+    protected function saveCredentialJson(string $file, $data)
     {
         $content = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_PRETTY_PRINT);
         $this->filesystem->dumpFile($file, $content);
