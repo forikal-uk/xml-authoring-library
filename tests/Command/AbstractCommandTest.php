@@ -4,6 +4,10 @@ namespace Forikal\Library\Tests\Command;
 
 use Forikal\Library\Command\AbstractCommand;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 final class AbstractCommandTest extends TestCase
@@ -71,6 +75,27 @@ final class AbstractCommandTest extends TestCase
             ['/some/path', false],
             ['/', true],
         ];
+    }
+
+    /**
+     * @test
+     */
+    public function writeErrorTest()
+    {
+        $input = $this->createMock(InputInterface::class);
+        $errorOutput = $this->createMock(OutputInterface::class);
+        $errorOutput->expects($this->once())->method('writeln')->with('<error> \\<Test> </error>');
+        $output = $this->createMock(ConsoleOutputInterface::class);
+        $output->expects($this->once())->method('getErrorOutput')->willReturn($errorOutput);
+        $output->expects($this->never())->method('writeln');
+
+        $command = new class extends AbstractCommand {
+            public function execute(InputInterface $input, OutputInterface $output) {
+                $this->writeError($output, '<Test>');
+            }
+        };
+        $command->setApplication(new Application());
+        $command->execute($input, $output);
     }
 
     /**
