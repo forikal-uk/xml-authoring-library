@@ -3,14 +3,22 @@
 namespace Forikal\Library\Tests\GoogleAPI;
 
 use Forikal\Library\GoogleAPI\GoogleAPIClient;
-use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\vfsStreamDirectory;
-use org\bovigo\vfs\vfsStreamWrapper;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Filesystem\Filesystem;
 
 class GoogleAPIClientTest extends TestCase
 {
+    /**
+     * Path to a directory where to store temporary test files
+     */
+    const TEMP_DIR = __DIR__.DIRECTORY_SEPARATOR.'temp';
+
+    /**
+     * @var Filesystem Symfony filesystem helper
+     */
+    protected $filesystem;
+
     /**
      * @var \Google_Client|\PHPUnit\Framework\MockObject\MockObject Google API client mock. The original class methods
      *     are never called
@@ -22,9 +30,16 @@ class GoogleAPIClientTest extends TestCase
      */
     protected $loggerMock;
 
+    /**
+     * {@inheritdoc}
+     */
     protected function setUp()
     {
         parent::setUp();
+
+        $this->filesystem = new Filesystem();
+        $this->filesystem->remove(static::TEMP_DIR);
+        $this->filesystem->mkdir(static::TEMP_DIR);
 
         $this->googleClientMock = $this
             ->getMockBuilder('Google_Client')
@@ -35,17 +50,23 @@ class GoogleAPIClientTest extends TestCase
         $this->googleClientMock->method('setAccessType')->with('offline');
 
         $this->loggerMock = $this->createMock(LoggerInterface::class);
+    }
 
-        // Taken from https://phpunit.de/manual/4.8/en/test-doubles.html#test-doubles.mocking-the-filesystem
-        vfsStreamWrapper::register();
-        vfsStreamWrapper::setRoot(new vfsStreamDirectory('google'));
+    /**
+     * {@inheritdoc}
+     */
+    protected function tearDown()
+    {
+        $this->filesystem->remove(static::TEMP_DIR);
+
+        parent::tearDown();
     }
 
     public function testAuthenticateWithoutSecretFile()
     {
         $this->googleClientMock->method('setScopes')->with([]);
 
-        $secretPath = vfsStream::url('google/secret.json');
+        $secretPath = static::TEMP_DIR.DIRECTORY_SEPARATOR.'secret.json';
         $this->expectException('RuntimeException');
         $this->expectExceptionMessage('The `'.$secretPath.'` file doesn\'t exist');
         $client = new GoogleAPIClient($this->googleClientMock);
@@ -54,8 +75,8 @@ class GoogleAPIClientTest extends TestCase
 
     public function testAuthenticateWithNotExistingAccessToken()
     {
-        $secretPath = vfsStream::url('google/secret.json');
-        $tokenPath = vfsStream::url('google/token.json');
+        $secretPath = static::TEMP_DIR.DIRECTORY_SEPARATOR.'secret.json';
+        $tokenPath = static::TEMP_DIR.DIRECTORY_SEPARATOR.'token.json';
         file_put_contents($secretPath, '{"secret": "qwerty"}');
 
         $this->googleClientMock->method('setScopes')->with([\Google_Service_Drive::DRIVE_READONLY]);
@@ -88,8 +109,8 @@ class GoogleAPIClientTest extends TestCase
 
     public function testAuthenticateWithExistingAccessTokenAndRefresh()
     {
-        $secretPath = vfsStream::url('google/secret.json');
-        $tokenPath = vfsStream::url('google/token.json');
+        $secretPath = static::TEMP_DIR.DIRECTORY_SEPARATOR.'secret.json';
+        $tokenPath = static::TEMP_DIR.DIRECTORY_SEPARATOR.'token.json';
         file_put_contents($secretPath, '{"secret": "qwerty"}');
         file_put_contents($tokenPath, '{"token": ")*F)SD*&"}');
 
@@ -121,7 +142,7 @@ class GoogleAPIClientTest extends TestCase
 
     public function testAuthenticateWithoutAccessToken()
     {
-        $secretPath = vfsStream::url('google/secret.json');
+        $secretPath = static::TEMP_DIR.DIRECTORY_SEPARATOR.'secret.json';
         file_put_contents($secretPath, '{"secret": "qwerty"}');
 
         $this->googleClientMock->method('setScopes')->with([]);
@@ -139,13 +160,13 @@ class GoogleAPIClientTest extends TestCase
 
         $client = new GoogleAPIClient($this->googleClientMock, $this->loggerMock);
         $client->authenticate($secretPath, null, [], function () { return 'foo1'; });
-        $this->assertCount(1, vfsStreamWrapper::getRoot()->getChildren());
+        $this->assertCount(1, array_diff(scandir(static::TEMP_DIR), array('..', '.')));
     }
 
     public function testForceAuthenticate()
     {
-        $secretPath = vfsStream::url('google/secret.json');
-        $tokenPath = vfsStream::url('google/token.json');
+        $secretPath = static::TEMP_DIR.DIRECTORY_SEPARATOR.'secret.json';
+        $tokenPath = static::TEMP_DIR.DIRECTORY_SEPARATOR.'token.json';
         file_put_contents($secretPath, '{"secret": "qwerty"}');
         file_put_contents($tokenPath, '{"token": "U23Slsd--4"}');
 
@@ -169,8 +190,8 @@ class GoogleAPIClientTest extends TestCase
 
     public function testFailAuthentication()
     {
-        $secretPath = vfsStream::url('google/secret.json');
-        $tokenPath = vfsStream::url('google/token.json');
+        $secretPath = static::TEMP_DIR.DIRECTORY_SEPARATOR.'secret.json';
+        $tokenPath = static::TEMP_DIR.DIRECTORY_SEPARATOR.'token.json';
         file_put_contents($secretPath, '{"secret": "qwerty"}');
 
         $this->googleClientMock->method('setScopes')->with([]);
