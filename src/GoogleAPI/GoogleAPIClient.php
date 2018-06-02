@@ -11,9 +11,9 @@ use Symfony\Component\Filesystem\Filesystem;
  *
  * @ignore A single class for all the services is made for easy Google API mocking in tests
  *
- * @property-read \Google_Service_Drive $driveService
- * @property-read \Google_Service_Sheets $sheetsService
- * @property-read \Google_Service_Slides $slidesService
+ * @property \Google_Service_Drive $driveService
+ * @property \Google_Service_Sheets $sheetsService
+ * @property \Google_Service_Slides $slidesService
  * ...and all the other services
  *
  * @author Surgie Finesse
