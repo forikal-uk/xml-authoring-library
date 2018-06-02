@@ -1,5 +1,5 @@
 * text=auto
 
 # Casts line break symbols in text files to the LF symbol
-*.{php,json,md,xml} text eol=lf
+*.{php,json,md,xml,xml.dist} text eol=lf
 *.{gitignore,gitattributes} text eol=lf
