@@ -95,7 +95,7 @@ class GoogleAPIClient
         $this->client->setAuthConfig($this->loadCredentialJSON($clientSecretFile));
 
         // Getting an access token
-        if ($accessTokenFile !== null && !$forceAuthenticate && file_exists($accessTokenFile)) {
+        if ($accessTokenFile !== null && !$forceAuthenticate && is_file($accessTokenFile)) {
             $this->logger->info('Getting the last Google API access token from the `'.$accessTokenFile.'` file');
             $this->client->setAccessToken($this->loadCredentialJSON($accessTokenFile));
         } else {
@@ -125,7 +125,7 @@ class GoogleAPIClient
         // Refreshing the access token if required
         if ($this->client->isAccessTokenExpired()) {
             $this->logger->info('The access token is expired; refreshing the token');
-            $accessToken = $this->client->fetchAccessTokenWithRefreshToken($this->client->getRefreshToken());
+            $accessToken = $this->client->fetchAccessTokenWithRefreshToken();
             if (isset($accessToken['error_description'])) {
                 throw new \RuntimeException('Google has declined refreshing the token: '.$accessToken['error_description']);
             }
@@ -147,9 +147,10 @@ class GoogleAPIClient
     public function __get($name)
     {
         if (substr($name, -7) === 'Service') {
-            $serviceClass = 'Google_Service_'.ucfirst(substr($name, 0, -7));
+            $service = ucfirst(substr($name, 0, -7));
+            $serviceClass = 'Google_Service_'.$service;
             if (!class_exists($serviceClass)) {
-                throw new \LogicException('The '.$name.' Google service doesn\'t exist');
+                throw new \LogicException('The '.$service.' Google service doesn\'t exist');
             }
 
             return new $serviceClass($this->client);

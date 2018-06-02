@@ -12,7 +12,8 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^7.1",
-        "google/apiclient": "^2.0"
+        "google/apiclient": "^2.0",
+        "mikey179/vfsStream": "^1.6"
     },
     "suggest": {
         "google/apiclient": "To use the Google API helper (version ^2.0 is required)",
@@ -27,5 +28,8 @@
         "psr-4": {
             "Forikal\\Library\\Tests\\": "tests/"
         }
+    },
+    "scripts": {
+        "test": "phpunit"
     }
 }
