@@ -78,7 +78,8 @@ class GoogleAPIClient
      * @param callable $getAuthCode A function which asks the user for an auth code. Takes an authentication url (the
      *     user must open it in browser) and returns an auth code.
      * @param bool $forceAuthenticate If true, the user will be asked to authenticate even if the access token exist
-     * @throws \Exception If something wrong
+     * @throws \RuntimeException If the authentication failed
+     * @throws \LogicException If the $getAuthCode function returns not a filled string
      */
     public function authenticate(
         string $clientSecretFile,
@@ -91,49 +92,23 @@ class GoogleAPIClient
         $this->client->setScopes($scopes);
         $this->client->setAccessType('offline');
         $this->client->setRedirectUri('urn:ietf:wg:oauth:2.0:oob');
-
-        $this->logger->info('Getting the Google API client secret from the `'.$clientSecretFile.'` file');
-        $this->client->setAuthConfig($this->loadCredentialJSON($clientSecretFile));
+        $this->loadClientSecretFromFile($clientSecretFile);
 
         // Getting an access token
-        if ($accessTokenFile !== null && !$forceAuthenticate && is_file($accessTokenFile)) {
-            $this->logger->info('Getting the last Google API access token from the `'.$accessTokenFile.'` file');
-            $this->client->setAccessToken($this->loadCredentialJSON($accessTokenFile));
+        if (!$forceAuthenticate && $accessTokenFile !== null && is_file($accessTokenFile)) {
+            $this->loadAccessTokenFromFile($accessTokenFile);
         } else {
-            // Getting an auth code
-            $authUrl = $this->client->createAuthUrl();
-            $authCode = $getAuthCode($authUrl);
-            if (!is_string($authCode) || $authCode === '') {
-                throw new \LogicException('The $getAuthCode function has returned a not-string or an empty string');
-            }
+            $this->loadAccessTokenByAuthenticatingUser($getAuthCode);
 
-            // Authenticating
-            $this->logger->info('Sending the authentication code to Google');
-            $accessToken = $this->client->fetchAccessTokenWithAuthCode($authCode);
-            if (isset($accessToken['error_description'])) {
-                throw new \RuntimeException('Google has declined the auth code: '.$accessToken['error_description']);
-            }
-            $this->logger->notice('Authenticated successfully');
-
-            // Saving the token
             if ($accessTokenFile !== null) {
-                $this->logger->info('Saving the access token to the `'.$accessTokenFile.'` file'
-                    . ', so subsequent executions will not prompt for authorization');
-                $this->saveCredentialJSON($accessTokenFile, $accessToken);
+                $this->saveCurrentAccessTokenToFile($accessTokenFile);
+                $this->logger->info('So subsequent executions will not prompt for authorization');
             }
         }
 
-        // Refreshing the access token if required
-        if ($this->client->isAccessTokenExpired()) {
-            $this->logger->info('The access token is expired; refreshing the token');
-            $accessToken = $this->client->fetchAccessTokenWithRefreshToken();
-            if (isset($accessToken['error_description'])) {
-                throw new \RuntimeException('Google has declined refreshing the token: '.$accessToken['error_description']);
-            }
-
+        if ($this->refreshAccessTokenIfRequired()) {
             if ($accessTokenFile !== null) {
-                $this->logger->info('Saving the refreshed access token to the `'.$accessTokenFile.'` file');
-                $this->saveCredentialJSON($accessTokenFile, $accessToken);
+                $this->saveCurrentAccessTokenToFile($accessTokenFile);
             }
         }
 
@@ -158,6 +133,144 @@ class GoogleAPIClient
         }
 
         throw new \LogicException('Undefined property: '.static::class.'::$'.$name);
+    }
+
+    /**
+     * Loads a client secret from file to Google Client
+     *
+     * @param string $filePath Path to the file
+     * @throws \RuntimeException If the loading failed
+     */
+    protected function loadClientSecretFromFile(string $filePath)
+    {
+        $this->logger->info('Getting the Google API client secret from the `'.$filePath.'` file');
+
+        try {
+            $secretData = $this->loadCredentialJSON($filePath);
+        } catch (\RuntimeException $exception) {
+            throw new \RuntimeException('Couldn\'t parse the client secret file: '.$exception->getMessage());
+        }
+
+        try {
+            $this->client->setAuthConfig($secretData);
+        } catch (\Exception $exception) {
+            throw new \RuntimeException('Failed to apply the client secret from file `'.$filePath.'` to Google SDK: '.$exception->getMessage());
+        }
+    }
+
+    /**
+     * Loads an access token from file to Google Client
+     *
+     * @param string $filePath Path to the file
+     * @throws \RuntimeException If the authentication failed
+     */
+    protected function loadAccessTokenFromFile(string $filePath)
+    {
+        $this->logger->info('Getting the last Google API access token from the `'.$filePath.'` file');
+
+        try {
+            $tokenData = $this->loadCredentialJSON($filePath);
+        } catch (\RuntimeException $exception) {
+            throw new \RuntimeException('Couldn\'t parse the access token file: '.$exception->getMessage());
+        }
+
+        try {
+            $this->client->setAccessToken($tokenData);
+        } catch (\Exception $exception) {
+            throw new \RuntimeException('Failed to set the access token from file `'.$filePath.'` to Google SDK: '.$exception->getMessage());
+        }
+    }
+
+    /**
+     * Gets an access token using the interactive authentication process and saves it to the current Google client
+     *
+     * @param callable $getAuthCode A function which asks the user for an auth code. Takes an authentication url (the
+     *     user must open it in browser) and returns an auth code.
+     * @param string|null $tokenFilePath
+     * @throws \RuntimeException If the authentication fails
+     * @throws \LogicException If the $getAuthCode function returns not a filled string
+     */
+    protected function loadAccessTokenByAuthenticatingUser(callable $getAuthCode)
+    {
+        // Getting an auth code
+        try {
+            $authUrl = $this->client->createAuthUrl();
+        } catch (\Exception $exception) {
+            throw new \RuntimeException(
+                'Couldn\'t create an authentication URL: '.rtrim($exception->getMessage(), '.').'. ' .
+                'Maybe there is a problem with the secret file.'
+            );
+        }
+
+        $authCode = $getAuthCode($authUrl);
+        if (!is_string($authCode) || $authCode === '') {
+            throw new \LogicException('The $getAuthCode function has returned a not a filled string');
+        }
+
+        // Authenticating
+        $this->logger->info('Sending the authentication code to Google');
+        try {
+            $accessToken = $this->client->fetchAccessTokenWithAuthCode($authCode);
+        } catch (\Exception $exception) {
+            throw new \RuntimeException(
+                'Failed to send the authentication code to Google: '.rtrim($exception->getMessage(), '.').'. ' .
+                'Maybe there is a problem with the secret file.'
+            );
+        }
+        if (isset($accessToken['error'])) {
+            throw new \RuntimeException('Google has declined the auth code: '.($accessToken['error_description'] ?? '(no message)'));
+        }
+
+        $this->logger->notice('Authenticated successfully');
+    }
+
+    /**
+     * Saves the current access token to file
+     *
+     * @param string $tokenFilePath Path to the file
+     * @throws \RuntimeException If file saving fails
+     * @throws \LogicException If the client doesn't have a token
+     */
+    protected function saveCurrentAccessTokenToFile(string $tokenFilePath)
+    {
+        $this->logger->info('Saving the access token to the `'.$tokenFilePath.'` file');
+
+        $token = $this->client->getAccessToken();
+        if ($token === null) {
+            throw new \LogicException('Can\'t save the token because the current Google client doesn\'t have an access token');
+        }
+
+        try {
+            $this->saveCredentialJSON($tokenFilePath, $token);
+        } catch (\RuntimeException $exception) {
+            throw new \RuntimeException('Failed to save the access token: '.$exception->getMessage());
+        }
+    }
+
+    /**
+     * Refreshed the current access token (if required) and sets the new token to the Google client
+     *
+     * @return bool Whether the token was refreshed
+     * @throws \RuntimeException If the refreshing failed
+     */
+    protected function refreshAccessTokenIfRequired(): bool
+    {
+        if (!$this->client->isAccessTokenExpired()) {
+            return false;
+        }
+
+        $this->logger->info('The access token is expired; refreshing the token');
+
+        try {
+            $accessToken = $this->client->fetchAccessTokenWithRefreshToken();
+        } catch (\Exception $exception) {
+            throw new \RuntimeException('Failed to refresh the token: '.$exception->getMessage());
+        }
+        if (isset($accessToken['error'])) {
+            throw new \RuntimeException('Google has declined refreshing the token: '.($accessToken['error_description'] ?? '(no message)'));
+        }
+
+        return true;
     }
 
     /**
