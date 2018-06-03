@@ -56,7 +56,7 @@ class MyCommand extends Command
 {
     execute(InputInterface $input, OutputInterface $output)
     {
-        $googleClient = new GoogleAPIClient(); // You can pass a \Google_Client mock to the constructor. It will be use in the services.
+        $googleClient = new GoogleAPIClient(); // You can pass a \Google_Client mock to the constructor. It will be used in the Google services.
         
         if (!$googleClient->authenticateFromCommand(
             $input,
