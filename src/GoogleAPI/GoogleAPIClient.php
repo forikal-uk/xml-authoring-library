@@ -90,6 +90,7 @@ class GoogleAPIClient
         $this->client->setApplicationName('Forikal Tools');
         $this->client->setScopes($scopes);
         $this->client->setAccessType('offline');
+        $this->client->setRedirectUri('urn:ietf:wg:oauth:2.0:oob');
 
         $this->logger->info('Getting the Google API client secret from the `'.$clientSecretFile.'` file');
         $this->client->setAuthConfig($this->loadCredentialJSON($clientSecretFile));

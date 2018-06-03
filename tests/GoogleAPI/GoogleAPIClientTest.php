@@ -48,6 +48,7 @@ class GoogleAPIClientTest extends TestCase
             ->getMock();
         $this->googleClientMock->method('setApplicationName')->with('Forikal Tools');
         $this->googleClientMock->method('setAccessType')->with('offline');
+        $this->googleClientMock->method('setRedirectUri');
 
         $this->loggerMock = $this->createMock(LoggerInterface::class);
     }
