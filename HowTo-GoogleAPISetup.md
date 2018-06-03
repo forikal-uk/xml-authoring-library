@@ -8,7 +8,7 @@ In order for our commands to connect to Google's API, we have to do the followin
 
 - Create project on https://console.developers.google.com/apis/dashboard.
 - Click Enable APIs and enable the Google Sheets API and the Google Drive API
-- Go to Credentials, then click Create credentials, and select Service account key
+- Go to Credentials, then click Create credentials, and select *Service account key*
 - Choose New service account in the drop down. Give the account a name, anything is fine
 - For Role I selected Project -> Editor
 - For Key type, choose JSON (the default) and download the file. 
