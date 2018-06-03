@@ -19,4 +19,8 @@ Content of the file should be similar to `client_secret.json.dist`
 find in the JSON file.
 
 
-^Dev Notes: I followed the instructions above, wrote notes on how to improve the wording and grabbed screen grabs as I did it. So, I (@forikal-uk) shall migrate them over to here at some point. See my notes at: https://github.com/forikal-uk/gsheet-to-xml/issues/6#issuecomment-393713500 
+^Dev Notes:
+
+* I followed the instructions above, wrote notes on how to improve the wording and grabbed screen grabs as I did it. So, I (@forikal-uk) shall migrate them over to here at some point. See my notes at: https://github.com/forikal-uk/gsheet-to-xml/issues/6#issuecomment-393713500 
+
+* There are a number of types of API key available. I have followed Google's _Help me choose_ guide and came to the conclusion that, because we have user interaction and access user data, O Auth 2.0 is probably the type of key that we will be using. See my notes in [the comment on ping-drive](https://github.com/forikal-uk/ping-drive/issues/1#issuecomment-394159265).
