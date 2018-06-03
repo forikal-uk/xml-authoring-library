@@ -48,32 +48,37 @@ Usage example:
 
 ```php
 use Forikal\Library\GoogleAPI\GoogleAPIClient;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-$googleClient = new GoogleAPIClient();
-
-$googleClient->authenticate(
-    'google-client-secret.json',
-    'google-access-token.json',
-    [\Google_Service_Drive::DRIVE_READONLY, \Google_Service_Sheets::SPREADSHEETS_READONLY],
-    function ($authURL) use ($input, $output) {
-        $output->writeln('Open the following URL in a browser, get an auth code and paste it below:');
-        $output->writeln($authURL, OutputInterface::OUTPUT_PLAIN);
-
-        $helper = $this->getHelper('question');
-        $question = new Question('Auth code: ');
-        $question->setNormalizer('trim');
-        return $helper->ask($input, $output, $question);
+class MyCommand extends Command
+{
+    execute(InputInterface $input, OutputInterface $output)
+    {
+        $googleClient = new GoogleAPIClient();
+        
+        if (!$googleClient->authenticateFromCommand(
+            $input,
+            $output
+            'google-client-secret.json',
+            'google-access-token.json',
+            [\Google_Service_Drive::DRIVE_READONLY, \Google_Service_Sheets::SPREADSHEETS_READONLY]
+        )) {
+            return 1;
+        }
+        
+        // $googleAPIClient->driveService is a \Google_Service_Drive instance. All the other services are available.
+        $file = $googleAPIClient->driveService->files->get('87ad6fg90gr0m91c84');
+        
+        return 0;
     }
-);
-
-// $googleAPIClient->driveService is a \Google_Service_Drive instance. All the other services are available.
-$file = $googleAPIClient->driveService->files->get('87ad6fg90gr0m91c84');
+}
 ```
 
 * `'google-client-secret.json'` is a path to a Google API client secret file. You can learn how to get it from [this instruction](HowTo-GoogleAPISetup.md).
 * `'google-access-token.json'` is a path to a file where to store a Google API access token so the helper won't prompt to authenticate next time. This file is optional and the value can be `null`.
-* The third argument is a list of required permissions.
+* The last argument is a list of required permissions.
 
 You can find more information in the source code. 
 

@@ -4,6 +4,11 @@ namespace Forikal\Library\GoogleAPI;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Symfony\Component\Console\Formatter\OutputFormatter;
+use Symfony\Component\Console\Helper\QuestionHelper;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -95,7 +100,7 @@ class GoogleAPIClient
         $this->loadClientSecretFromFile($clientSecretFile);
 
         // Getting an access token
-        if (!$forceAuthenticate && $accessTokenFile !== null && is_file($accessTokenFile)) {
+        if ($accessTokenFile !== null && !$forceAuthenticate && is_file($accessTokenFile)) {
             $this->loadAccessTokenFromFile($accessTokenFile);
         } else {
             $this->loadAccessTokenByAuthenticatingUser($getAuthCode);
@@ -113,6 +118,61 @@ class GoogleAPIClient
         }
 
         $this->logger->info('The Google authentication is completed');
+    }
+
+    /**
+     * A helper for a Symfony Console command. Authenticates the client by asking user to go to the URL and paste the
+     * code given by Google. In case of a failed authentication prints a message to the console.
+     *
+     * @param InputInterface $input The command input
+     * @param OutputInterface $output The command output
+     * @param string $clientSecretFile Path to the API client secret JSON file
+     * @param string|null $accessTokenFile Path to the access token JSON file. Optional. The file may not exist.
+     * @param string[] $scopes The list of the required authenticaton scopes,
+     *     e.g. [\Google_Service_Drive::DRIVE_READONLY, \Google_Service_Sheets::SPREADSHEETS_READONLY]
+     * @param bool $forceAuthenticate If true, the user will be asked to authenticate even if the access token exist
+     * @return bool True if the user is authenticated successfully
+     */
+    public function authenticateFromCommand(
+        InputInterface $input,
+        OutputInterface $output,
+        string $clientSecretFile,
+        ?string $accessTokenFile,
+        array $scopes,
+        bool $forceAuthenticate = false
+    ): bool {
+        try {
+            $this->authenticate(
+                $clientSecretFile,
+                $accessTokenFile,
+                $scopes,
+                function ($authURL) use ($input, $output) {
+                    $output->writeln('<info>You need to authenticate to your Google account to proceed</info>');
+                    $output->writeln('Open the following URL in a browser, get an auth code and paste it below:');
+                    $output->writeln('');
+                    $output->writeln($authURL, OutputInterface::OUTPUT_PLAIN);
+                    $output->writeln('');
+
+                    $question = new Question('Auth code: ');
+                    $question->setValidator(function ($answer) {
+                        $answer = trim($answer);
+
+                        if ($answer === '') {
+                            throw new \RuntimeException('Please enter an auth code');
+                        }
+
+                        return $answer;
+                    });
+                    return (new QuestionHelper())->ask($input, $output, $question);
+                },
+                $forceAuthenticate
+            );
+        } catch (\RuntimeException $exception) {
+            $output->writeln('<error>Failed to authenticate to Google: '.OutputFormatter::escape($exception->getMessage()).'</error>');
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -204,7 +264,7 @@ class GoogleAPIClient
 
         $authCode = $getAuthCode($authUrl);
         if (!is_string($authCode) || $authCode === '') {
-            throw new \LogicException('The $getAuthCode function has returned a not a filled string');
+            throw new \LogicException('The $getAuthCode function has returned a not-string or an empty string');
         }
 
         // Authenticating

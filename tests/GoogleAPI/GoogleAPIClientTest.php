@@ -5,6 +5,11 @@ namespace Forikal\Library\Tests\GoogleAPI;
 use Forikal\Library\GoogleAPI\GoogleAPIClient;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Formatter\OutputFormatter;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
 
 class GoogleAPIClientTest extends TestCase
@@ -241,5 +246,65 @@ class GoogleAPIClientTest extends TestCase
             ['fooService', false],
             ['bar', false]
         ];
+    }
+
+    public function testCommandAuthentication()
+    {
+        $this->googleClientMock->method('createAuthUrl')->willReturn('https://google.com/login');
+        $this->googleClientMock->method('fetchAccessTokenWithAuthCode')->with('auth-code')->willReturn(['token' => '24DSFS']);
+        $this->googleClientMock->method('getAccessToken')->willReturn(['token' => '24DSFS']);
+        $this->googleClientMock->method('isAccessTokenExpired')->willReturn(false);
+
+        $secretPath = static::TEMP_DIR.DIRECTORY_SEPARATOR.'secret.json';
+        $tokenPath = static::TEMP_DIR.DIRECTORY_SEPARATOR.'token.json';
+        file_put_contents($secretPath, '{"secret": "qwerty"}');
+
+        $command = new class ($secretPath, $tokenPath, $this->googleClientMock) extends Command {
+            public function __construct($secretPath, $tokenPath, $api) {
+                parent::__construct('test');
+                $this->secretPath = $secretPath;
+                $this->tokenPath = $tokenPath;
+                $this->api = $api;
+            }
+            protected function execute(InputInterface $input, OutputInterface $output) {
+                $client = new GoogleAPIClient($this->api);
+                $result = $client->authenticateFromCommand($input, $output, $this->secretPath, $this->tokenPath, []);
+                return $result ? 0 : 1;
+            }
+        };
+
+        $commandTester = new CommandTester($command);
+        $commandTester->setInputs(['auth-code']);
+        $commandTester->execute([]);
+        $output = $commandTester->getDisplay();
+        $this->assertContains('You need to authenticate to your Google account to proceed', $output);
+        $this->assertContains('Open the following URL in a browser, get an auth code and paste it below', $output);
+        $this->assertContains("\nhttps://google.com/login\n", $output);
+        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertFileExists($tokenPath);
+        $this->assertEquals(['token' => '24DSFS'], json_decode(file_get_contents($tokenPath), true), 'Created JSON token file is incorrect');
+    }
+
+    public function testFailCommandAuthentication()
+    {
+        $secretPath = static::TEMP_DIR.DIRECTORY_SEPARATOR.'no-file.json';
+
+        $command = new class ($secretPath) extends Command {
+            public function __construct($secretPath) {
+                parent::__construct('test');
+                $this->secretPath = $secretPath;
+            }
+            protected function execute(InputInterface $input, OutputInterface $output) {
+                $client = new GoogleAPIClient();
+                $result = $client->authenticateFromCommand($input, $output, $this->secretPath, null, []);
+                return $result ? 0 : 1;
+            }
+        };
+
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([]);
+        $output = $commandTester->getDisplay();
+        $this->assertContains('Failed to authenticate to Google: Couldn\'t parse the client secret file: The `'.OutputFormatter::escape($secretPath).'` file doesn\'t exist', $output);
+        $this->assertNotEquals(0, $commandTester->getStatusCode());
     }
 }
