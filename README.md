@@ -56,14 +56,14 @@ class MyCommand extends Command
 {
     execute(InputInterface $input, OutputInterface $output)
     {
-        $googleClient = new GoogleAPIClient();
+        $googleClient = new GoogleAPIClient(); // You can pass a \Google_Client mock to the constructor. It will be use in the services.
         
         if (!$googleClient->authenticateFromCommand(
             $input,
             $output
-            'google-client-secret.json',
-            'google-access-token.json',
-            [\Google_Service_Drive::DRIVE_READONLY, \Google_Service_Sheets::SPREADSHEETS_READONLY]
+            'google-client-secret.json', // A path to a Google API client secret file
+            'google-access-token.json', // A path to a file where to store a Google API access token so the helper won't prompt to authenticate next time
+            [\Google_Service_Drive::DRIVE_READONLY, \Google_Service_Sheets::SPREADSHEETS_READONLY] // A list of required permissions
         )) {
             return 1;
         }
@@ -76,10 +76,8 @@ class MyCommand extends Command
 }
 ```
 
-* `'google-client-secret.json'` is a path to a Google API client secret file. You can learn how to get it from [this instruction](HowTo-GoogleAPISetup.md).
-* `'google-access-token.json'` is a path to a file where to store a Google API access token so the helper won't prompt to authenticate next time. This file is optional and the value can be `null`.
-* The last argument is a list of required permissions.
-
+You can learn how to get it from [this instruction](HowTo-GoogleAPISetup.md).
+If you need to customize the console messages and behaviour, use the `authenticate` method.
 You can find more information in the source code. 
 
 ### Console logger
