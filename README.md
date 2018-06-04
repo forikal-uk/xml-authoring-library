@@ -76,7 +76,7 @@ class MyCommand extends Command
 }
 ```
 
-You can learn how to get it from [this instruction](HowTo-GoogleAPISetup.md).
+You can learn how to get the Google API client secret file from [this instruction](HowTo-GoogleAPISetup.md).
 If you need to customize the console messages and behaviour, use the `authenticate` method.
 You can find more information in the source code. 
 
