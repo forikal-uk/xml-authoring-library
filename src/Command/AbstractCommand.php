@@ -84,7 +84,7 @@ abstract class AbstractCommand extends Command
     }
 
     /**
-     * Returns true if the directory is readable.
+     * Returns true if the directory is readable whilst suppressing errors caused by open_basedir settings.
      *
      * @param string $directory
      * @return bool
