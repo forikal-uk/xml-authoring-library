@@ -18,6 +18,11 @@ abstract class AbstractCommand extends Command
     const DEFAULT_CONFIG_FILENAME = 'scapesettings.yaml';
 
     /**
+     * @string Appended to directories to go up a level.
+     */
+    const SHIFT_DIR_PARENT = DIRECTORY_SEPARATOR . '..';
+
+    /**
      * @var Filesystem
      */
     protected $filesystem;
@@ -70,22 +75,47 @@ abstract class AbstractCommand extends Command
             if ($this->filesystem->exists($configFilepath)) {
                 return $configFilepath;
             }
-            $shift .= DIRECTORY_SEPARATOR . '..';
-        } while (!$this->isRootDirectory($configDirectory));
+            $shift .= self::SHIFT_DIR_PARENT;
+        } while ($this->isReadableDirectory($configDirectory));
 
         throw new FileNotFoundException(sprintf(
-            'Configuration file not found.'
+            'Configuration file not found'. $this->getOpenBaseDirWarning() . '.'
         ));
     }
 
     /**
+     * Returns true if the directory is readable.
+     *
      * @param string $directory
      * @return bool
      */
-    protected function isRootDirectory($directory)
+    protected function isReadableDirectory($directory)
     {
-        return $directory == realpath($directory . DIRECTORY_SEPARATOR . '..');
+        return (@is_readable(@realpath($directory . self::SHIFT_DIR_PARENT)));
     }
+
+    /**
+     * Returns a supplamentary message about open base directories if open_basedir has a value.
+     *
+     * @return string
+     */
+    private function getOpenBaseDirWarning()
+    {
+        if ($this->getOpenBaseDir()) {
+            return ' when searching all directories that are open ['.$this->getOpenBaseDir().']';
+        }
+    }
+
+    /**
+     * Get the value of the open_basedir ini setting.
+     *
+     * @return string
+     */
+    private function getOpenBaseDir()
+    {
+        return ini_get('open_basedir');
+    }
+
 
     /**
      * Prints an error to an output

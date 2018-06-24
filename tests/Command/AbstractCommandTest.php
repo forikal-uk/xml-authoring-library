@@ -21,7 +21,7 @@ final class AbstractCommandTest extends TestCase
         $stub = $this->getMockForAbstractClass(AbstractCommand::class);
         $foo = self::getPrivateMethod($stub, 'getConfigFilename');
         self::expectException(FileNotFoundException::class);
-        self::expectExceptionMessage('Configuration file not found.');
+        self::expectExceptionMessageRegExp('/Configuration file not found/');
         $foo->invoke($stub, 'config.yaml');
     }
 
@@ -53,13 +53,13 @@ final class AbstractCommandTest extends TestCase
 
     /**
      * @test
-     * @dataProvider isRootDirectoryDataProvider
+     * @dataProvider isReadableDirectoryDataProvider
      */
-    public function isRootDirectoryTest($directory, $expected)
+    public function isReadableDirectoryTest($directory, $expected)
     {
         /** @var AbstractCommand $stub */
         $stub = $this->getMockForAbstractClass(AbstractCommand::class);
-        $foo = self::getPrivateMethod($stub, 'isRootDirectory');
+        $foo = self::getPrivateMethod($stub, 'isReadableDirectory');
         self::assertEquals(
             $expected,
             $foo->invoke($stub, $directory)
@@ -69,11 +69,11 @@ final class AbstractCommandTest extends TestCase
     /**
      * @return array
      */
-    public function isRootDirectoryDataProvider()
+    public function isReadableDirectoryDataProvider()
     {
         return [
             ['/some/path', false],
-            ['/', true],
+            [realpath(__DIR__), true],
         ];
     }
 
