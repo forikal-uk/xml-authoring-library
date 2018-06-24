@@ -22,7 +22,7 @@ final class AbstractCommandTest extends TestCase
         $foo = self::getPrivateMethod($stub, 'getConfigFilename');
         self::expectException(FileNotFoundException::class);
         self::expectExceptionMessage('Configuration file not found.');
-        $foo->invoke($stub, 'config.yml');
+        $foo->invoke($stub, 'config.yaml');
     }
 
     /**

@@ -15,7 +15,7 @@ use Symfony\Component\Yaml\Parser;
  */
 abstract class AbstractCommand extends Command
 {
-    const DEFAULT_CONFIG_FILENAME = 'scapesettings.yml';
+    const DEFAULT_CONFIG_FILENAME = 'scapesettings.yaml';
 
     /**
      * @var Filesystem
