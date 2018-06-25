@@ -1,8 +1,8 @@
 <?php
 
-namespace Forikal\Library\Tests\Command;
+namespace XmlSquad\Library\Tests\Command;
 
-use Forikal\Library\Command\AbstractCommand;
+use XmlSquad\Library\Command\AbstractCommand;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;

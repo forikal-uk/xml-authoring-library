@@ -1,6 +1,6 @@
 <?php
 
-namespace Forikal\Library\GoogleAPI;
+namespace XmlSquad\Library\GoogleAPI;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -93,7 +93,7 @@ class GoogleAPIClient
         callable $getAuthCode,
         bool $forceAuthenticate = false
     ) {
-        $this->client->setApplicationName('Forikal Tools');
+        $this->client->setApplicationName('XmlSquad Tools');
         $this->client->setScopes($scopes);
         $this->client->setAccessType('offline');
         $this->client->setRedirectUri('urn:ietf:wg:oauth:2.0:oob');

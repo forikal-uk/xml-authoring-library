@@ -1,6 +1,6 @@
 {
-    "name": "forikal-uk/xml-authoring-library",
-    "description": "Holding code that is reused by more than one component of the forikal xml authoring suite of projects.",
+    "name": "xmlsquad/xml-authoring-library",
+    "description": "Holding code that is reused by more than one component of the xmlsquad xml authoring suite of projects.",
     "type": "library",
     "license": "Apache-2.0",
     "require": {
@@ -16,16 +16,16 @@
     },
     "suggest": {
         "google/apiclient": "To use the Google API helper (version ^2.0 is required)",
-        "forikal-uk/xmlauthor-example-command": "To see example how to use AbstractCommand"
+        "xmlsquad/xmlauthor-example-command": "To see example how to use AbstractCommand"
     },
     "autoload": {
         "psr-4": {
-            "Forikal\\Library\\": "src/"
+            "XmlSquad\\Library\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Forikal\\Library\\Tests\\": "tests/"
+            "XmlSquad\\Library\\Tests\\": "tests/"
         }
     },
     "scripts": {

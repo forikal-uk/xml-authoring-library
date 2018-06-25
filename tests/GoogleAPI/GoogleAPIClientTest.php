@@ -1,8 +1,8 @@
 <?php
 
-namespace Forikal\Library\Tests\GoogleAPI;
+namespace XmlSquad\Library\Tests\GoogleAPI;
 
-use Forikal\Library\GoogleAPI\GoogleAPIClient;
+use XmlSquad\Library\GoogleAPI\GoogleAPIClient;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -51,7 +51,7 @@ class GoogleAPIClientTest extends TestCase
             ->disableOriginalConstructor()
             ->disableProxyingToOriginalMethods()
             ->getMock();
-        $this->googleClientMock->method('setApplicationName')->with('Forikal Tools');
+        $this->googleClientMock->method('setApplicationName')->with('XmlSquad Tools');
         $this->googleClientMock->method('setAccessType')->with('offline');
         $this->googleClientMock->method('setRedirectUri');
 

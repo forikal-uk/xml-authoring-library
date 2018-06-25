@@ -1,21 +1,21 @@
 # xml-authoring-library
 
-This is a place to put code that is reused by many commands which are part of the [xml-authoring-tools suite](https://github.com/forikal-uk/xml-authoring-tools).
+This is a place to put code that is reused by many commands which are part of the [xml-authoring-tools suite](https://github.com/xmlsquad/xml-authoring-tools).
 
-Created as a place to put code which is re-used by two or more projects in the forikal xml-authoring suite.
+Created as a place to put code which is re-used by two or more projects in the xmlsquad xml-authoring suite.
 
-See the related [Issue that triggered the creation of this project](https://github.com/forikal-uk/xml-authoring-tools/issues/3).
+See the related [Issue that triggered the creation of this project](https://github.com/xmlsquad/xml-authoring-tools/issues/3).
 
 ## Common Documentation
 
 A library of help pages. I.e Information that is relevant to more than one project in this suite of projects.
 
-- [How To: Google API Setup](https://github.com/forikal-uk/xml-authoring-library/blob/master/HowTo-GoogleAPISetup.md)
+- [How To: Google API Setup](https://github.com/xmlsquad/xml-authoring-library/blob/master/HowTo-GoogleAPISetup.md)
 
 ## This project can be added to your project via composer
 
 ```
-$ composer require forikal-uk/xml-authoring-library --prefer-source
+$ composer require xmlsquad/xml-authoring-library --prefer-source
 ```
 
 If you would like to develop both the library and, say a command that uses it in tandem. I beleive that composer allows you to grab the library as *source*
@@ -47,7 +47,7 @@ composer require google/apiclient:^2.0
 Usage example:
 
 ```php
-use Forikal\Library\GoogleAPI\GoogleAPIClient;
+use XmlSquad\Library\GoogleAPI\GoogleAPIClient;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -88,7 +88,7 @@ In contrast to the [built-in Synfony Console logger](https://symfony.com/doc/3.4
 Usage example:
 
 ```php
-use Forikal\Library\Console\ConsoleLogger;
+use XmlSquad\Library\Console\ConsoleLogger;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Psr\Log\LogLevel;

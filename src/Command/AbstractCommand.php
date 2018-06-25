@@ -1,6 +1,6 @@
 <?php
 
-namespace Forikal\Library\Command;
+namespace XmlSquad\Library\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
@@ -28,7 +28,7 @@ abstract class AbstractCommand extends Command
     protected $filesystem;
 
     /**
-     * AbstractForikalCommand constructor.
+     * AbstractXmlSquadCommand constructor.
      * @param null $name
      * @param Filesystem|null $filesystem
      */

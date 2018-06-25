@@ -1,8 +1,8 @@
 <?php
 
-namespace Forikal\Library\Tests\GoogleAPI;
+namespace XmlSquad\Library\Tests\GoogleAPI;
 
-use Forikal\Library\GoogleAPI\GoogleAPIFactory;
+use XmlSquad\Library\GoogleAPI\GoogleAPIFactory;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 

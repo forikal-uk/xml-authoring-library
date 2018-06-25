@@ -1,8 +1,8 @@
 <?php
 
-namespace Forikal\Library\Tests\Console;
+namespace XmlSquad\Library\Tests\Console;
 
-use Forikal\Library\Console\ConsoleLogger;
+use XmlSquad\Library\Console\ConsoleLogger;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LogLevel;
 use Symfony\Component\Console\Formatter\OutputFormatter;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Forikal\Library\Console;
+namespace XmlSquad\Library\Console;
 
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;

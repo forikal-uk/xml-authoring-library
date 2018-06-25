@@ -1,6 +1,6 @@
 <?php
 
-namespace Forikal\Library\GoogleAPI;
+namespace XmlSquad\Library\GoogleAPI;
 
 use Psr\Log\LoggerInterface;
 
