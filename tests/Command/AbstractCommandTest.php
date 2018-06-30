@@ -26,6 +26,11 @@ final class AbstractCommandTest extends TestCase
     }
 
     /**
+     *
+     *
+     * Note this test is brittle because it assumes the tests
+     * are invoked from a directory that contains a README file.
+     *
      * @test
      * @dataProvider getConfigFilenameDataProvider
      */
@@ -47,7 +52,7 @@ final class AbstractCommandTest extends TestCase
     {
         return [
             ['README.md', getcwd() . '/README.md'],
-            ['xml-authoring-library', getcwd()],
+            //['xml-authoring-library', getcwd()], //Fails when tests are invoked from anywhere other than a specified directory.
         ];
     }
 
