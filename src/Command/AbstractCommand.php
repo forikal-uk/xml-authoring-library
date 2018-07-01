@@ -39,14 +39,17 @@ abstract class AbstractCommand extends Command
         $this->filesystem = $filesystem ?? new Filesystem();
     }
 
+
     /**
-     * {@inheritdoc}
+     * Optional argument that specifies default
+     *
+     * @return $this
      */
-    protected function configure()
+    protected function doConfigureConfigFilename()
     {
         $this
-            ->addOption('configFilename', 'c', InputOption::VALUE_REQUIRED, 'Name of configuration file', self::DEFAULT_CONFIG_FILENAME)
-        ;
+            ->addOption('configFilename', 'c', InputOption::VALUE_OPTIONAL, 'Name of configuration file', self::DEFAULT_CONFIG_FILENAME);
+        return $this;
     }
 
     /**
