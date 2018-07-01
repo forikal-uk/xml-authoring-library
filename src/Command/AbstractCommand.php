@@ -78,7 +78,7 @@ abstract class AbstractCommand extends Command
 
 
     /**
-     * Configure the [drive-url] argument.
+     * Configure the [driveUrl] argument.
      *
      * @param string $description
      * @return $this
@@ -89,7 +89,7 @@ abstract class AbstractCommand extends Command
 
         $this
             ->addArgument(
-                'drive-url',
+                'driveUrl',
                 InputArgument::REQUIRED,
                 $description
             );
@@ -123,13 +123,13 @@ abstract class AbstractCommand extends Command
 
 
     /**
-     * Get DataSourceOption [drive-url]
+     * Get DataSourceOption [driveUrl]
      *
      * @param InputInterface $input
      * @return mixed
      */
     protected function getDriveUrlArgument(InputInterface $input){
-        return $input->getArgument('drive-url');
+        return $input->getArgument('driveUrl');
     }
 
     /**
