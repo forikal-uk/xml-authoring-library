@@ -4,6 +4,8 @@ namespace XmlSquad\Library\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
@@ -39,6 +41,37 @@ abstract class AbstractCommand extends Command
         $this->filesystem = $filesystem ?? new Filesystem();
     }
 
+    /**
+     * Configure the [drive-url] argument.
+     *
+     * @param string $description
+     * @return $this
+     */
+    protected function doConfigureDriveUrlArgument(
+        $description = 'The URL of the Google Drive entity (Google Sheet or Google Drive folder).')
+    {
+
+        $this
+            ->addArgument(
+                'drive-url',
+                InputArgument::REQUIRED,
+                $description
+            );
+
+        return $this;
+    }
+
+
+    /**
+     * @param $configFilename
+     * @return array
+     */
+    protected function getConfigOptions($configFilename)
+    {
+        $configFilename = $this->getConfigFilename($configFilename);
+        $parser = new Parser();
+        return $parser->parseFile($configFilename);
+    }
 
     /**
      * Optional argument that specifies default
@@ -52,15 +85,15 @@ abstract class AbstractCommand extends Command
         return $this;
     }
 
+
     /**
-     * @param $configFilename
-     * @return array
+     * Get DataSourceOption [drive-url]
+     *
+     * @param InputInterface $input
+     * @return mixed
      */
-    protected function getConfigOptions($configFilename)
-    {
-        $configFilename = $this->getConfigFilename($configFilename);
-        $parser = new Parser();
-        return $parser->parseFile($configFilename);
+    protected function getDriveUrlArgument(InputInterface $input){
+        return $input->getArgument('drive-url');
     }
 
     /**
