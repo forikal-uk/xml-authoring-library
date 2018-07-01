@@ -76,7 +76,7 @@ class GoogleAPIClient
     /**
      * Authenticates the client by asking user to go to the URL and paste the code given by Google
      *
-     * @param string $clientSecretFile Path to the API client secret JSON file
+     * @param string $gApiOAuthSecretFile Path to the API client secret JSON file
      * @param string|null $accessTokenFile Path to the access token JSON file. Optional. The file may not exist.
      * @param string[] $scopes The list of the required authenticaton scopes,
      *     e.g. [\Google_Service_Drive::DRIVE_READONLY, \Google_Service_Sheets::SPREADSHEETS_READONLY]
@@ -87,7 +87,7 @@ class GoogleAPIClient
      * @throws \LogicException If the $getAuthCode function returns not a filled string
      */
     public function authenticate(
-        string $clientSecretFile,
+        string $gApiOAuthSecretFile,
         ?string $accessTokenFile,
         array $scopes,
         callable $getAuthCode,
@@ -97,7 +97,7 @@ class GoogleAPIClient
         $this->client->setScopes($scopes);
         $this->client->setAccessType('offline');
         $this->client->setRedirectUri('urn:ietf:wg:oauth:2.0:oob');
-        $this->loadClientSecretFromFile($clientSecretFile);
+        $this->loadClientSecretFromFile($gApiOAuthSecretFile);
 
         // Getting an access token
         if ($accessTokenFile !== null && !$forceAuthenticate && is_file($accessTokenFile)) {
@@ -126,7 +126,7 @@ class GoogleAPIClient
      *
      * @param InputInterface $input The command input
      * @param OutputInterface $output The command output
-     * @param string $clientSecretFile Path to the API client secret JSON file
+     * @param string $gApiOAuthSecretFile Path to the API client secret JSON file
      * @param string|null $accessTokenFile Path to the access token JSON file. Optional. The file may not exist.
      * @param string[] $scopes The list of the required authenticaton scopes,
      *     e.g. [\Google_Service_Drive::DRIVE_READONLY, \Google_Service_Sheets::SPREADSHEETS_READONLY]
@@ -136,14 +136,14 @@ class GoogleAPIClient
     public function authenticateFromCommand(
         InputInterface $input,
         OutputInterface $output,
-        string $clientSecretFile,
+        string $gApiOAuthSecretFile,
         ?string $accessTokenFile,
         array $scopes,
         bool $forceAuthenticate = false
     ): bool {
         try {
             $this->authenticate(
-                $clientSecretFile,
+                $gApiOAuthSecretFile,
                 $accessTokenFile,
                 $scopes,
                 function ($authURL) use ($input, $output) {

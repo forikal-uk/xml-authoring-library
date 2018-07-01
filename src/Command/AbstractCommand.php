@@ -43,19 +43,19 @@ abstract class AbstractCommand extends Command
 
 
     /**
-     * Configure GApiConnectionOption - [client-secret-file]
+     * Configure GApiConnectionOption - [gApiOAuthSecretFile]
      *
      * @param int $mode
      * @param string $description
      * @return $this
      */
-    protected function doConfigureGApiSecretFileOption(
+    protected function doConfigureGApiOAuthSecretFileOption(
         $mode = InputOption::VALUE_OPTIONAL,
         $description = 'The path to an application client secret file used for authentication to Google.')
     {
         $this
             ->addOption(
-                'client-secret-file',
+                'gApiOAuthSecretFile',
                 null,
                 $mode,
                 $description
@@ -65,13 +65,13 @@ abstract class AbstractCommand extends Command
 
 
     /**
-     * Get GApiConnectionOption - [client-secret-file]
+     * Get GApiConnectionOption - [gApiOAuthSecretFile]
      *
      * @param InputInterface $input
      * @return mixed
      */
-    protected function doGetGApiSecretFileOption(InputInterface $input) {
-        return $input->getOption('client-secret-file');
+    protected function doGetGApiOAuthSecretFileOption(InputInterface $input) {
+        return $input->getOption('gApiOAuthSecretFile');
     }
 
 
