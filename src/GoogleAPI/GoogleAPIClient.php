@@ -77,7 +77,7 @@ class GoogleAPIClient
      * Authenticates the client by asking user to go to the URL and paste the code given by Google
      *
      * @param string $gApiOAuthSecretFile Path to the API client secret JSON file
-     * @param string|null $accessTokenFile Path to the access token JSON file. Optional. The file may not exist.
+     * @param string|null $gApiAccessTokenFile Path to the access token JSON file. Optional. The file may not exist.
      * @param string[] $scopes The list of the required authenticaton scopes,
      *     e.g. [\Google_Service_Drive::DRIVE_READONLY, \Google_Service_Sheets::SPREADSHEETS_READONLY]
      * @param callable $getAuthCode A function which asks the user for an auth code. Takes an authentication url (the
@@ -88,7 +88,7 @@ class GoogleAPIClient
      */
     public function authenticate(
         string $gApiOAuthSecretFile,
-        ?string $accessTokenFile,
+        ?string $gApiAccessTokenFile,
         array $scopes,
         callable $getAuthCode,
         bool $forceAuthenticate = false
@@ -100,20 +100,20 @@ class GoogleAPIClient
         $this->loadClientSecretFromFile($gApiOAuthSecretFile);
 
         // Getting an access token
-        if ($accessTokenFile !== null && !$forceAuthenticate && is_file($accessTokenFile)) {
-            $this->loadAccessTokenFromFile($accessTokenFile);
+        if ($gApiAccessTokenFile !== null && !$forceAuthenticate && is_file($gApiAccessTokenFile)) {
+            $this->loadAccessTokenFromFile($gApiAccessTokenFile);
         } else {
             $this->loadAccessTokenByAuthenticatingUser($getAuthCode);
 
-            if ($accessTokenFile !== null) {
-                $this->saveCurrentAccessTokenToFile($accessTokenFile);
+            if ($gApiAccessTokenFile !== null) {
+                $this->saveCurrentAccessTokenToFile($gApiAccessTokenFile);
                 $this->logger->info('So subsequent executions will not prompt for authorization');
             }
         }
 
         if ($this->refreshAccessTokenIfRequired()) {
-            if ($accessTokenFile !== null) {
-                $this->saveCurrentAccessTokenToFile($accessTokenFile);
+            if ($gApiAccessTokenFile !== null) {
+                $this->saveCurrentAccessTokenToFile($gApiAccessTokenFile);
             }
         }
 
@@ -127,7 +127,7 @@ class GoogleAPIClient
      * @param InputInterface $input The command input
      * @param OutputInterface $output The command output
      * @param string $gApiOAuthSecretFile Path to the API client secret JSON file
-     * @param string|null $accessTokenFile Path to the access token JSON file. Optional. The file may not exist.
+     * @param string|null $gApiAccessTokenFile Path to the access token JSON file. Optional. The file may not exist.
      * @param string[] $scopes The list of the required authenticaton scopes,
      *     e.g. [\Google_Service_Drive::DRIVE_READONLY, \Google_Service_Sheets::SPREADSHEETS_READONLY]
      * @param bool $forceAuthenticate If true, the user will be asked to authenticate even if the access token exist
@@ -137,14 +137,14 @@ class GoogleAPIClient
         InputInterface $input,
         OutputInterface $output,
         string $gApiOAuthSecretFile,
-        ?string $accessTokenFile,
+        ?string $gApiAccessTokenFile,
         array $scopes,
         bool $forceAuthenticate = false
     ): bool {
         try {
             $this->authenticate(
                 $gApiOAuthSecretFile,
-                $accessTokenFile,
+                $gApiAccessTokenFile,
                 $scopes,
                 function ($authURL) use ($input, $output) {
                     $output->writeln('<info>You need to authenticate to your Google account to proceed</info>');
