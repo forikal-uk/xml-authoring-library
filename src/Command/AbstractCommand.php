@@ -581,6 +581,12 @@ abstract class AbstractCommand extends Command
     }
 
 
+    protected function getCommandStaticConfigFilename()
+    {
+        return static::DEFAULT_CONFIG_FILENAME;
+    }
+
+
 
 
 }
