@@ -342,7 +342,7 @@ class GoogleAPIClient
      */
     protected function loadCredentialJSON(string $file)
     {
-        if (!file_exists($file)) {
+        if (!@file_exists($file)) {
             throw new \RuntimeException('The `'.$file.'` file doesn\'t exist');
         }
         if (!is_file($file)) {
