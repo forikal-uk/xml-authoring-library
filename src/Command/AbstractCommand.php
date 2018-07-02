@@ -132,6 +132,38 @@ abstract class AbstractCommand extends Command
         return $this;
     }
 
+    /**
+     * Configure GApiConnectionOption - [forceAuthenticate]
+     *
+     * @param int $mode
+     * @param string $description
+     * @return $this
+     */
+    protected function configureForceAuthenticateOption(
+        $description = 'If set, you will be asked to authenticate even if an access token exist.')
+    {
+
+        $this
+            ->addOption(
+                'forceAuthenticate',
+                null,
+                InputOption::VALUE_NONE,
+                $description
+            );
+        return $this;
+    }
+
+
+    /**
+     * Get GApiConnectionOption [forceAuthenticate]
+     *
+     * @param InputInterface $input
+     * @return mixed
+     */
+    protected function getForceAuthenticateOption(InputInterface $input){
+        return $input->getOption('forceAuthenticate');
+    }
+
 
     /**
      * Get GApiConnectionOption - [gApiServiceAccountCredentialsFile]
