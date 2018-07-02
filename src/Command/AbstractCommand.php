@@ -17,7 +17,7 @@ use Symfony\Component\Yaml\Parser;
  */
 abstract class AbstractCommand extends Command
 {
-    const DEFAULT_CONFIG_FILENAME = 'scapesettings.yaml';
+    const DEFAULT_CONFIG_FILENAME = 'XmlAuthoringProjectSettings.yaml';
 
     /**
      * @string Appended to directories to go up a level.
