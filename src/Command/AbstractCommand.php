@@ -26,6 +26,12 @@ abstract class AbstractCommand extends Command
 
 
     /**
+     * Root gApiAccess config key
+     */
+    const ROOT_CONFIG_G_API_ACCESS_KEY = 'gApiAccess';
+
+
+    /**
      * @string Appended to directories to go up a level.
      */
     const SHIFT_DIR_PARENT = DIRECTORY_SEPARATOR . '..';
@@ -474,11 +480,11 @@ abstract class AbstractCommand extends Command
 
         // Parsing paths
         foreach (array('gApiOAuthSecretFile', 'gApiAccessTokenFile') as $option) {
-            if (!isset($configData['google'][$option])) {
+            if (!isset($configData[self::ROOT_CONFIG_G_API_ACCESS_KEY][$option])) {
                 continue;
             }
-            if (!is_string($path = $configData['google'][$option])) {
-                $this->writeError($output, 'The google.'.$option.' option value from the configuration file is not a string');
+            if (!is_string($path = $configData[self::ROOT_CONFIG_G_API_ACCESS_KEY][$option])) {
+                $this->writeError($output, 'The ['. self::ROOT_CONFIG_G_API_ACCESS_KEY .'] ['.$option.'] option value from the configuration file is not a string');
                 continue;
             }
 
