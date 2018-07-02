@@ -49,7 +49,7 @@ abstract class AbstractCommand extends Command
      * @param string $description
      * @return $this
      */
-    protected function doConfigureGApiOAuthSecretFileOption(
+    protected function configureGApiOAuthSecretFileOption(
         $mode = InputOption::VALUE_OPTIONAL,
         $description = 'The path to an application client secret file used for authentication to Google.')
     {
@@ -70,7 +70,7 @@ abstract class AbstractCommand extends Command
      * @param InputInterface $input
      * @return mixed
      */
-    protected function doGetGApiOAuthSecretFileOption(InputInterface $input) {
+    protected function getGApiOAuthSecretFileOption(InputInterface $input) {
         return $input->getOption('gApiOAuthSecretFile');
     }
 
