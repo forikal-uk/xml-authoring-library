@@ -75,6 +75,41 @@ abstract class AbstractCommand extends Command
     }
 
 
+
+    /**
+     * Configure GApiConnectionOption - [gApiAccessTokenFile]
+     *
+     * @param int $mode
+     * @param string $description
+     * @return $this
+     */
+    protected function configureGApiAccessTokenFileOption(
+        $description = 'The path to an access token file. The'
+        . ' file may not exists. If an access token file is used, the command remembers user credentials and'
+        . ' doesn\'t require a Google authentication next time.')
+    {
+
+        $this
+            ->addOption(
+                'gApiAccessTokenFile',
+                't',
+                InputOption::VALUE_OPTIONAL,
+                $description
+            );
+        return $this;
+    }
+
+
+    /**
+     * Get GApiConnectionOption - [gApiAccessTokenFile]
+     *
+     * @param InputInterface $input
+     * @return mixed
+     */
+    protected function getGApiAccessTokenFileOption(InputInterface $input) {
+        return $input->getOption('gApiAccessTokenFile');
+    }
+
     /**
      * Configure GApiConnectionOption - [gApiOAuthSecretFile]
      *
