@@ -14,7 +14,7 @@ In order for our commands to connect to Google's API, we have to do the followin
 - For Key type, choose JSON (the default) and download the file. 
 This file contains a private key so be very careful with it, it is your credentials after all. 
 Content of the file should be similar to `client_secret.json.dist` 
-- Finally, edit the sharing permissions for the spreadsheet you want to access and share either View 
+- *Finally, edit the sharing permissions for the spreadsheet you want to access and share* either View 
 (if you only want to read the file) or Edit (if you need read/write) access to the client_email address you can 
 find in the JSON file.
 
