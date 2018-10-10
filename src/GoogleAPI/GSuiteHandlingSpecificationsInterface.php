@@ -20,7 +20,7 @@ interface GSuiteHandlingSpecificationsInterface
     public function getColumnRangeLimit(): string;
 
     /**
-     * If a file is called foo_, then it is assumed to be 'private' and should be explicitly ignored,
+     * For example: If a file is called foo_, then it is assumed to be 'private' and should be explicitly ignored,
      *
      *
      * Test if full file name ends with _ or only filename without the extension
@@ -32,7 +32,7 @@ interface GSuiteHandlingSpecificationsInterface
     public function isGSheetFileNameIgnored($fullName): bool;
 
     /**
-     *  If a Google Sheet's tab is named foo_, then it is assumed to be 'private'.
+     *  For example: If a Google Sheet's tab is named foo_, then it is assumed to be 'private'.
      *
      * @param $title
      * @return bool
