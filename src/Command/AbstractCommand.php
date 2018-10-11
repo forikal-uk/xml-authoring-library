@@ -188,6 +188,14 @@ abstract class AbstractCommand extends Command
     }
 
 
+    protected function doConfigureDataSourceOptions()
+    {
+        $this
+            ->doConfigureDriveUrlArgument()
+            ->doConfigureDriveUrlIsRecursiveArgument();
+
+        return $this;
+    }
 
 
     /**
