@@ -12,6 +12,11 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml;
+use XmlSquad\Library\GoogleAPI\GoogleClientFactory;
+use XmlSquad\Library\GoogleAPI\GoogleAPIClient;
+use Google_Service_Drive;
+use Google_Service_Sheets;
+
 
 /**
  * Class AbstractCommand
@@ -288,6 +293,36 @@ abstract class AbstractCommand extends Command
         return $input->getOption('recursive');
     }
 
+
+    protected function makeGoogleClient($credentialsPath)
+    {
+        $clientFactory = new GoogleClientFactory();
+        $client = $clientFactory->createClient($credentialsPath);
+
+        return $client;
+    }
+
+
+
+    protected function makeAuthenticatedGoogleAPIClient(
+        $input,
+        $output,
+        $fullCredentialsPath
+    ){
+
+        $googleClient = new GoogleAPIClient();
+        $googleClient->authenticateFromCommand(
+            $input,
+            $output,
+            $fullCredentialsPath,
+            //$this->fileOptionToFullPath($this->getGApiAccessTokenFileOption($input)),
+            $this->findGApiAccessTokenFileValue($input, $output),
+            [Google_Service_Drive::DRIVE_READONLY, Google_Service_Sheets::SPREADSHEETS_READONLY],
+            $this->getForceAuthenticateOption($input)
+        );
+
+        return $googleClient;
+    }
 
     /**
      * @param string $configFilename
