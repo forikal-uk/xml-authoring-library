@@ -218,6 +218,29 @@ abstract class AbstractCommand extends Command
         return $this;
     }
 
+    /**
+     * Configure the [driveUrl] argument.
+     *
+     * @param string $description
+     * @return $this
+     */
+    protected function doConfigureDriveUrlIsRecursiveArgument(
+        $description = 'If the Google Drive entity is a Google Drive folder, this option specifies whether or not to recurse through sub-directories to find sheets.')
+    {
+
+        $this
+            ->addArgument(
+                'recursive',
+                InputArgument::OPTIONAL,
+                $description
+            );
+
+        return $this;
+    }
+
+
+
+
 
     /**
      * @param $configFilename
@@ -252,6 +275,18 @@ abstract class AbstractCommand extends Command
     protected function getDriveUrlArgument(InputInterface $input){
         return $input->getArgument('driveUrl');
     }
+
+
+    /**
+     * Get DataSourceOption [recursive]
+     *
+     * @param InputInterface $input
+     * @return mixed
+     */
+    protected function getIsRecursiveOption(InputInterface $input){
+        return $input->getOption('recursive');
+    }
+
 
     /**
      * @param string $configFilename
