@@ -41,7 +41,6 @@ interface GSuiteHandlingSpecificationsInterface
 
     /**
      * @param array|null $row
-     * @param \XmlSquad\GsheetXml\Model\Domain\DomainGSheetObjectFactoryInterface $domainGSheetObjectFactory
      * @return bool
      */
     public function isHeadingsRow(?array $row): bool;
