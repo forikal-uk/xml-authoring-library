@@ -229,9 +229,10 @@ abstract class AbstractCommand extends Command
     {
 
         $this
-            ->addArgument(
+            ->addOption(
                 'recursive',
-                InputArgument::OPTIONAL,
+                'r',
+                InputOption::VALUE_NONE,
                 $description
             );
 
