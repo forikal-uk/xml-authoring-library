@@ -103,7 +103,7 @@ abstract class AbstractGSheetProcessingCommand extends AbstractCommand
      *
      * @return $this
      */
-    protected function configureGenericOptions()
+    protected function configureGSheetProcessingConsoleParameters()
     {
         $this->doConfigureDataSourceOptions();
         $this->doConfigureGApiConnectionOptions();
@@ -115,7 +115,7 @@ abstract class AbstractGSheetProcessingCommand extends AbstractCommand
     protected function doConfigureGApiConnectionOptions()
     {
         $this
-            ->configureGApiOAuthSecretFileOption(InputOption::VALUE_REQUIRED)
+            ->configureGApiOAuthSecretFileOption()
             ->configureGApiAccessTokenFileOption()
             ->configureForceAuthenticateOption();
 

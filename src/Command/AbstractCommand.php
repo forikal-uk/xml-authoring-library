@@ -73,7 +73,7 @@ abstract class AbstractCommand extends Command
         $this
             ->addOption(
                 'gApiOAuthSecretFile',
-                null,
+                'c',
                 $mode,
                 $description
             );
