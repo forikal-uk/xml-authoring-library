@@ -17,6 +17,8 @@ use XmlSquad\Library\GoogleAPI\GoogleAPIClient;
 use Google_Service_Drive;
 use Google_Service_Sheets;
 
+use XmlSquad\Library\Console\ConsoleLogger;
+use Psr\Log\LogLevel;
 
 /**
  * Class AbstractCommand
@@ -310,8 +312,11 @@ abstract class AbstractCommand extends Command
         $fullCredentialsPath
     ){
 
-        $googleClient = new GoogleAPIClient();
-        $googleClient->authenticateFromCommand(
+        //$googleAPIClient = new GoogleAPIClient();
+
+        $googleAPIClient = $this->googleAPIFactory->make($this->makeConsoleLogger($output));
+
+        $googleAPIClient->authenticateFromCommand(
             $input,
             $output,
             $fullCredentialsPath,
@@ -321,7 +326,28 @@ abstract class AbstractCommand extends Command
             $this->getForceAuthenticateOption($input)
         );
 
-        return $googleClient;
+        return $googleAPIClient;
+    }
+
+
+
+    /**
+     * Creates a PSR logger instance which prints messages to the command output
+     *
+     * @param OutputInterface $output
+     * @return ConsoleLogger
+     */
+    protected function makeConsoleLogger(OutputInterface $output): ConsoleLogger
+    {
+        return new ConsoleLogger($output, [
+            LogLevel::DEBUG  => OutputInterface::VERBOSITY_VERY_VERBOSE,
+            LogLevel::INFO   => OutputInterface::VERBOSITY_VERBOSE,
+            LogLevel::NOTICE => OutputInterface::VERBOSITY_NORMAL
+        ], [
+            LogLevel::DEBUG  => '',
+            LogLevel::INFO   => '',
+            LogLevel::NOTICE => 'info'
+        ]);
     }
 
     /**

@@ -21,10 +21,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 use XmlSquad\Library\Application\Service\GoogleDriveProcessService;
 
 use XmlSquad\Library\GoogleAPI\GoogleAPIClient;
+use XmlSquad\Library\GoogleAPI\GoogleAPIFactory;
 
 
 use XmlSquad\Library\Command\AbstractCommand;
-
+use Symfony\Component\Filesystem\Filesystem;
 
 
 /**
@@ -48,6 +49,21 @@ use XmlSquad\Library\Command\AbstractCommand;
  */
 abstract class AbstractGSheetProcessingCommand extends AbstractCommand
 {
+
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param GoogleAPIFactory|null $googleAPIFactory Google API factory
+     */
+    public function __construct(GoogleAPIFactory $googleAPIFactory = null)
+    {
+        parent::__construct();
+
+        $this->googleAPIFactory = $googleAPIFactory ?? new GoogleAPIFactory();
+        $this->filesystem = new Filesystem();
+    }
+
 
     /**
      * Executes the current command.
