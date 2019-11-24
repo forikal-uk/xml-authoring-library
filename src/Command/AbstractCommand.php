@@ -144,7 +144,7 @@ abstract class AbstractCommand extends Command
         $this
             ->addOption(
                 'gApiServiceAccountCredentialsFile',
-                'c',
+                null,//'c',
                 $mode,
                 $description,
                 $default);
