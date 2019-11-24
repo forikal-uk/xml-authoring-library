@@ -59,6 +59,9 @@ class GoogleDriveFolderReadService
             /**
              * If a file is called, say, foo_, then it is assumed to be 'private' and should be explicitly ignored,
              * but it should be noted (in any feedback) that it was ignored
+             *
+             * Test if full file name ends with _ or only filename without the extension
+             * i.e. foo_.xlsx and foo__
              */
             if ($gSuiteHandlingSpecifications->isGSheetFileNameIgnored($childrenFile->getName())){
                 // @todo feedback that this file was ignored?
