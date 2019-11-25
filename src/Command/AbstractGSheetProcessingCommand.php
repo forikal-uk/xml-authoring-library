@@ -50,6 +50,11 @@ use Symfony\Component\Filesystem\Filesystem;
 abstract class AbstractGSheetProcessingCommand extends AbstractCommand
 {
 
+    /**
+     * If given both serviceKey and OAuth Credentials, helps choose which one to use.
+     * Abstract property. Can be overidden by subclass.
+     */
+    protected $preferServiceKey = false;
 
     /**
      * {@inheritDoc}
@@ -73,13 +78,39 @@ abstract class AbstractGSheetProcessingCommand extends AbstractCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
-        if ((!$this->findGApiOAuthSecretFileValue($input, $output) || (!$this->findGApiAccessTokenFileValue($input, $output)))) {
-            throw new Exception('Neither credentials command options nor settings not found.');
+        if ($this->getGApiServiceAccountCredentialsFileOption($input)){
+            $serviceKeyFileFound = true;
+            $serviceKeyFullCredentialsPath = $this->getGApiServiceAccountCredentialsFileOption($input);
+        }
+
+        if (($this->findGApiOAuthSecretFileValue($input, $output) && ($this->findGApiAccessTokenFileValue($input, $output)))) {
+            $oAuthKeyAndTokenFilenameFound = true;
+            $oAuthfullCredentialsPath = $this->findGApiOAuthSecretFileValue($input, $output);
+        }
+
+        if ((!$serviceKeyFileFound && !$oAuthKeyAndTokenFilenameFound)) {
+            throw new Exception('Neither servicekey, Oath credentials command options nor settings not found.');
             return 1;
         }
 
+        /*
+        elseif ((!$this->findGApiOAuthSecretFileValue($input, $output) || (!$this->findGApiAccessTokenFileValue($input, $output)))) {
+            throw new Exception('Neither credentials command options nor settings not found.');
+            return 1;
+        }
+        */
+
         //$fullCredentialsPath = $this->findFullCredentialsPath($this->getGApiOAuthSecretFileOption($input));
-        $fullCredentialsPath = $this->findGApiOAuthSecretFileValue($input, $output);
+
+
+
+        if ($this->preferServiceKey && $serviceKeyFullCredentialsPath){
+            $fullCredentialsPath = $serviceKeyFullCredentialsPath;
+
+        } else {
+            $fullCredentialsPath = $oAuthfullCredentialsPath;
+        }
+
         if (!$fullCredentialsPath) {
 
             throw new Exception('Credentials file not found. '. PHP_EOL .' Option: ['.$this->getGApiOAuthSecretFileOption($input).']');
@@ -88,7 +119,7 @@ abstract class AbstractGSheetProcessingCommand extends AbstractCommand
         //Delegate to the concrete class to perform the processing.
         $this->processDataSource(
             $output,
-            $this->createGoogleDriveProcessService( $this->makeAuthenticatedGoogleAPIClient($input, $output, $fullCredentialsPath )),
+            $this->createGoogleDriveProcessService( $this->makeAuthenticatedGoogleAPIClient($input, $output, $fullCredentialsPath, $this->preferServiceKey )),
             $this->getDataSourceOptions($input)
         );
 

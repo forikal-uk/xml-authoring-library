@@ -309,22 +309,32 @@ abstract class AbstractCommand extends Command
     protected function makeAuthenticatedGoogleAPIClient(
         $input,
         $output,
-        $fullCredentialsPath
+        $fullCredentialsPath,
+        $preferServiceKey = null
     ){
 
         //$googleAPIClient = new GoogleAPIClient();
 
-        $googleAPIClient = $this->googleAPIFactory->make($this->makeConsoleLogger($output));
+        if ($preferServiceKey) {
+            $googleAPIClient = $this->googleAPIFactory->make($this->makeConsoleLogger($output), $this->makeGoogleClient($fullCredentialsPath));
+        } else {
 
-        $googleAPIClient->authenticateFromCommand(
-            $input,
-            $output,
-            $fullCredentialsPath,
-            //$this->fileOptionToFullPath($this->getGApiAccessTokenFileOption($input)),
-            $this->findGApiAccessTokenFileValue($input, $output),
-            [Google_Service_Drive::DRIVE_READONLY, Google_Service_Sheets::SPREADSHEETS_READONLY],
-            $this->getForceAuthenticateOption($input)
-        );
+            $googleAPIClient = $this->googleAPIFactory->make($this->makeConsoleLogger($output));
+
+            $googleAPIClient->authenticateFromCommand(
+                $input,
+                $output,
+                $fullCredentialsPath,
+                //$this->fileOptionToFullPath($this->getGApiAccessTokenFileOption($input)),
+                $this->findGApiAccessTokenFileValue($input, $output),
+                [Google_Service_Drive::DRIVE_READONLY, Google_Service_Sheets::SPREADSHEETS_READONLY],
+                $this->getForceAuthenticateOption($input)
+            );
+
+        }
+
+
+
 
         return $googleAPIClient;
     }
@@ -575,13 +585,18 @@ abstract class AbstractCommand extends Command
     /**
      * Extract GApiAuth settings from array of config data.
      *
-     * @param array $configData
+     * @param array|null $configData
      * @param OutputInterface $output
      * @return array Empty if no settings extracted.
      */
-    protected function extractGApiAuthConfigSettings(array $configData, OutputInterface $output)
+    protected function extractGApiAuthConfigSettings($configData, OutputInterface $output)
     {
         $options = [];
+
+        if (!($configData)){
+            //No config data
+            return $options;
+        }
 
         // Parsing paths
         foreach (array('gApiOAuthSecretFile', 'gApiAccessTokenFile') as $option) {
