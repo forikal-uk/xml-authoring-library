@@ -29,6 +29,7 @@ class GoogleDriveProcessService
     public function processGoogleUrl(GoogleDriveProcessorInterface $googleDriveProcessor, string $url, bool $recursive, DomainGSheetObjectFactoryInterface $domainGSheetObjectFactory)
     {
         if ($this->isSpreadsheet($url)) {
+
             return $this->processGoogleSpreadsheet($googleDriveProcessor, $url, $domainGSheetObjectFactory);
         }
 

@@ -141,17 +141,21 @@ class GoogleAPIClient
         array $scopes,
         bool $forceAuthenticate = false
     ): bool {
+
+
         try {
             $this->authenticate(
                 $gApiOAuthSecretFile,
                 $gApiAccessTokenFile,
                 $scopes,
                 function ($authURL) use ($input, $output) {
-                    $output->writeln('<info>You need to authenticate to your Google account to proceed</info>');
-                    $output->writeln('Open the following URL in a browser, get an auth code and paste it below:');
-                    $output->writeln('');
+                    $output->writeln('<info>You need to authenticate to your Google account to proceed</info>', OutputInterface::VERBOSITY_NORMAL );
+                    $output->writeln('Open the following URL in a browser, get an auth code and paste it below:', OutputInterface::VERBOSITY_NORMAL);
+                    $output->writeln('', OutputInterface::VERBOSITY_NORMAL);
+
+                    //I did not put OutputInterface::VERBOSITY_NORMAL here until I test whether the VERBOSITY and OUTPUT bitwise operators can be combined with “Bitwise AND“ operator.
                     $output->writeln($authURL, OutputInterface::OUTPUT_PLAIN);
-                    $output->writeln('');
+                    $output->writeln('', OutputInterface::VERBOSITY_NORMAL);
 
                     $question = new Question('Auth code: ');
                     $question->setValidator(function ($answer) {
@@ -168,7 +172,7 @@ class GoogleAPIClient
                 $forceAuthenticate
             );
         } catch (\RuntimeException $exception) {
-            $output->writeln('<error>Failed to authenticate to Google: '.OutputFormatter::escape($exception->getMessage()).'</error>');
+            $output->writeln('<error>Failed to authenticate to Google: '.OutputFormatter::escape($exception->getMessage()).'</error>', OutputInterface::VERBOSITY_NORMAL);
             return false;
         }
 

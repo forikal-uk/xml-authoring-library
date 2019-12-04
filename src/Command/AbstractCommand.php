@@ -26,6 +26,13 @@ use Psr\Log\LogLevel;
 abstract class AbstractCommand extends Command
 {
 
+    /***
+     * After we have analysed which Google API Authentication methods are possible, and noted the prefered auth type.
+     * This constant represents the conclusion and defines the actual method to use.
+     */
+    const GOOGLE_API_KEYAUTHTYPECONLUSION__SERVICEKEY = 'GOOGLE_API_KEYAUTHTYPECONLUSION__SERVICEKEY';
+    const GOOGLE_API_KEYAUTHTYPECONLUSION__OAUTHKEY = 'GOOGLE_API_KEYAUTHTYPECONLUSION__OAUTHKEY';
+
     /**
      * The name of fallback configuration file for a case when the API files paths are not specified in the input
      */
@@ -310,15 +317,22 @@ abstract class AbstractCommand extends Command
         $input,
         $output,
         $fullCredentialsPath,
-        $preferServiceKey = null
+        $keyAuthTypeConlusion = null
     ){
 
         //$googleAPIClient = new GoogleAPIClient();
+        $output->writeln(__METHOD__, OutputInterface::VERBOSITY_VERBOSE);
 
-        if ($preferServiceKey) {
+        if ($keyAuthTypeConlusion == self::GOOGLE_API_KEYAUTHTYPECONLUSION__SERVICEKEY) {
+            $output->writeln("Creating googleAPIClient with Service Key ['.$fullCredentialsPath.']", OutputInterface::VERBOSITY_VERBOSE);
+
             $googleAPIClient = $this->googleAPIFactory->make($this->makeConsoleLogger($output), $this->makeGoogleClient($fullCredentialsPath));
         } else {
 
+            $tokenFileValue = $this->findGApiAccessTokenFileValue($input, $output);
+            $forceAuthentication = $this->getForceAuthenticateOption($input);
+
+            $output->writeln('Creating googleAPIClient with OAuth Credentials Key['.$fullCredentialsPath.'] TokenFile['.$tokenFileValue.'] forceAuthentication['. $forceAuthentication .']', OutputInterface::VERBOSITY_VERBOSE);
             $googleAPIClient = $this->googleAPIFactory->make($this->makeConsoleLogger($output));
 
             $googleAPIClient->authenticateFromCommand(
@@ -326,9 +340,9 @@ abstract class AbstractCommand extends Command
                 $output,
                 $fullCredentialsPath,
                 //$this->fileOptionToFullPath($this->getGApiAccessTokenFileOption($input)),
-                $this->findGApiAccessTokenFileValue($input, $output),
+                $tokenFileValue,
                 [Google_Service_Drive::DRIVE_READONLY, Google_Service_Sheets::SPREADSHEETS_READONLY],
-                $this->getForceAuthenticateOption($input)
+                $forceAuthentication
             );
 
         }
@@ -429,7 +443,7 @@ abstract class AbstractCommand extends Command
             $output = $output->getErrorOutput();
         }
 
-        $output->writeln($this->getHelper('formatter')->formatBlock($message, 'error'));
+        $output->writeln($this->getHelper('formatter')->formatBlock($message, 'error'),OutputInterface::VERBOSITY_NORMAL);
     }
 
     /**
@@ -448,35 +462,47 @@ abstract class AbstractCommand extends Command
     {
         $needToParseConfigFile = false;
 
-        $gApiOAuthSecretFile = $this->getGApiOAuthSecretFileOption($input);
-        if ($gApiOAuthSecretFile === null) {
+        $gApiOAuthSecretFileOption = $this->getGApiOAuthSecretFileOption($input);
+        if ($gApiOAuthSecretFileOption === null) {
             $needToParseConfigFile = true;
-            if ($output->isVerbose()) {
-                $output->writeln('The client secret file path is not specified, will try to get the path from a configuration file');
-            }
+
+            $output->writeln('The GApiOAuthSecretFileOption is not specified in command options.', OutputInterface::VERBOSITY_VERBOSE);
+
+        }
+
+        if (!$needToParseConfigFile) {
+            $output->writeln('The gApiOAuthSecretFile was specified in command options.', OutputInterface::VERBOSITY_VERBOSE);
+            return $gApiOAuthSecretFileOption;
         }
 
 
         // If the API file paths are not specified, find and read a configuration file
         if ($needToParseConfigFile) {
+
+            $output->writeln('Trying to parse config file for GApiOAuthSecretFile', OutputInterface::VERBOSITY_VERBOSE);
+
             if(!$this->isGApiAuthConfigOptionsFindable($output)){
+
+                $output->writeln('GApiAuthConfigOptions are not findable.', OutputInterface::VERBOSITY_VERBOSE);
                 return null;
             }
+            //else
+            $output->writeln('GApiAuthConfigOptions are findable.', OutputInterface::VERBOSITY_VERBOSE);
 
-            if ($gApiOAuthSecretFile === null) {
 
-                if ($this->findGApiOAuthSecretFileConfig($output)) {
-                    $gApiOAuthSecretFile = $this->findGApiOAuthSecretFileConfig($output);
-                } else {
-                    $this->writeError($output, 'The client secret file is specified neither in the CLI arguments nor in'
-                        . ' the configuration file');
-                    return null;
-                }
+            if ($this->findGApiOAuthSecretFileConfig($output)) {
+                $output->writeln('Found GApiOAuthSecretFile specified in config.', OutputInterface::VERBOSITY_VERBOSE);
+                return $this->findGApiOAuthSecretFileConfig($output);
+            } else {
+                $output->writeln('Could not find GApiOAuthSecretFile specified in config.', OutputInterface::VERBOSITY_VERBOSE);
             }
+
 
         }
 
-        return $gApiOAuthSecretFile;
+        $this->writeln('The client secret file is specified neither in the CLI arguments nor in'
+            . ' the configuration file', OutputInterface::VERBOSITY_VERBOSE);
+        return null;
     }
 
 
@@ -496,9 +522,9 @@ abstract class AbstractCommand extends Command
         $gApiAccessTokenFile = $this->getGApiAccessTokenFileOption($input);
         if ($gApiAccessTokenFile === null) {
             $needToParseConfigFile = true;
-            if ($output->isVerbose()) {
-                $output->writeln('The access token file path is not specified, will try to get the path from a configuration file');
-            }
+
+            $output->writeln('The access token file path is not specified, will try to get the path from a configuration file', OutputInterface::VERBOSITY_VERBOSE);
+
         }
 
         // If the API file paths are not specified, find and read a configuration file
@@ -627,17 +653,17 @@ abstract class AbstractCommand extends Command
     {
 
         if ($this->findConfigFile($output) === null) {
-            if ($output->isVerbose()) {
-                $output->writeln('A configuration file `'.$this->getCommandStaticConfigFilename().'`'
-                    . ' exists neither in the current directory nor in any parent directory');
-            }
+
+            $output->writeln('A configuration file `'.$this->getCommandStaticConfigFilename().'`'
+                    . ' exists neither in the current directory nor in any parent directory', OutputInterface::VERBOSITY_NORMAL);
+
             return null;
         }
 
 
-        if ($output->isVerbose()) {
-            $output->writeln('Reading options from the `' . $this->findConfigFile($output) . '` configuration file');
-        }
+
+        $output->writeln('Getting options from the `' . $this->findConfigFile($output) . '` configuration file', OutputInterface::VERBOSITY_DEBUG);
+
 
         try {
             $configData = Yaml\Yaml::parseFile($this->findConfigFile($output));
@@ -675,10 +701,10 @@ abstract class AbstractCommand extends Command
 
             // Check whether the parent directory is restricted
             if ($parentDirectory === false) {
-                if ($output->isVerbose()) {
-                    $output->writeln('The parent directory of `'.$directory.'` is restricted (maybe by open_basedir)'
-                        . ', so the search of a configuration file can\'t be proceeded');
-                }
+
+                $output->writeln('The parent directory of `'.$directory.'` is restricted (maybe by open_basedir)'
+                        . ', so the search of a configuration file can\'t be proceeded', OutputInterface::VERBOSITY_NORMAL);
+
                 break;
             }
 

@@ -79,16 +79,23 @@ abstract class AbstractGSheetProcessingCommand extends AbstractCommand
     {
 
         if ($this->getGApiServiceAccountCredentialsFileOption($input)){
-            $serviceKeyFileFound = true;
-            $serviceKeyFullCredentialsPath = $this->getGApiServiceAccountCredentialsFileOption($input);
+            $serviceKeyFilePathFound = true;
+            $serviceKeyFilePath = $this->getGApiServiceAccountCredentialsFileOption($input);
+
+            $output->writeln('serviceKeyFileFound ['. $serviceKeyFilePath .']', OutputInterface::VERBOSITY_VERBOSE);
         }
 
         if (($this->findGApiOAuthSecretFileValue($input, $output) && ($this->findGApiAccessTokenFileValue($input, $output)))) {
             $oAuthKeyAndTokenFilenameFound = true;
             $oAuthfullCredentialsPath = $this->findGApiOAuthSecretFileValue($input, $output);
+
+            $output->writeln('oAuthKeyAndTokenFilenameFound = TRUE:', OutputInterface::VERBOSITY_VERBOSE);
+            $output->writeln('oAuthfullCredentialsPath ['. $oAuthfullCredentialsPath .']', OutputInterface::VERBOSITY_VERBOSE);
+            $output->writeln('GApiAccessTokenFileValue ['. $this->findGApiAccessTokenFileValue($input, $output) .']', OutputInterface::VERBOSITY_VERBOSE);
+
         }
 
-        if ((!$serviceKeyFileFound && !$oAuthKeyAndTokenFilenameFound)) {
+        if ((!$serviceKeyFilePathFound && !$oAuthKeyAndTokenFilenameFound)) {
             throw new Exception('Neither servicekey, Oath credentials command options nor settings not found.');
             return 1;
         }
@@ -104,11 +111,13 @@ abstract class AbstractGSheetProcessingCommand extends AbstractCommand
 
 
 
-        if ($this->preferServiceKey && $serviceKeyFullCredentialsPath){
-            $fullCredentialsPath = $serviceKeyFullCredentialsPath;
+        if ($this->preferServiceKey && $serviceKeyFilePath){
+            $fullCredentialsPath = $serviceKeyFilePath;
+            $keyAuthTypeConclusion = AbstractCommand::GOOGLE_API_KEYAUTHTYPECONLUSION__SERVICEKEY;
 
         } else {
             $fullCredentialsPath = $oAuthfullCredentialsPath;
+            $keyAuthTypeConclusion = AbstractCommand::GOOGLE_API_KEYAUTHTYPECONLUSION__OAUTHKEY;
         }
 
         if (!$fullCredentialsPath) {
@@ -116,10 +125,15 @@ abstract class AbstractGSheetProcessingCommand extends AbstractCommand
             throw new Exception('Credentials file not found. '. PHP_EOL .' Option: ['.$this->getGApiOAuthSecretFileOption($input).']');
         }
 
+        $output->writeln('preferServiceKey ['. ( ($this->preferServiceKey) ? 'TRUE' : 'FALSE') .']', OutputInterface::VERBOSITY_VERBOSE);
+        $output->writeln('keyAuthTypeConlusion ['. $keyAuthTypeConclusion .']', OutputInterface::VERBOSITY_NORMAL);
+
+        $output->writeln('fullCredentialsPath set to: ['. $fullCredentialsPath .']', OutputInterface::VERBOSITY_VERBOSE);
+
         //Delegate to the concrete class to perform the processing.
         $this->processDataSource(
             $output,
-            $this->createGoogleDriveProcessService( $this->makeAuthenticatedGoogleAPIClient($input, $output, $fullCredentialsPath, $this->preferServiceKey )),
+            $this->createGoogleDriveProcessService( $this->makeAuthenticatedGoogleAPIClient($input, $output, $fullCredentialsPath, $keyAuthTypeConclusion )),
             $this->getDataSourceOptions($input)
         );
 
